@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathTutor Pro</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#F1F5F9;color:#1E293B;min-height:100vh}
+
+/* ── Screens ── */
+.screen{display:none;width:100%;min-height:100vh}
+.screen.active{display:flex}
+#scSetup,#scLogin,#scLoad{align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+#scApp{flex-direction:row}
+
+/* ── Auth card ── */
+.auth-card{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.auth-card h1{font-size:1.8rem;color:#1E293B;margin-bottom:4px}
+.auth-card .sub{color:#64748B;margin-bottom:24px;font-size:.95rem}
+
+/* ── Setup screen ── */
+.setup-card{max-width:680px;max-height:90vh;overflow-y:auto}
+.steps{counter-reset:step;list-style:none;margin:16px 0}
+.steps li{counter-increment:step;display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+.steps li::before{content:counter(step);background:#6366F1;color:#fff;border-radius:50%;width:28px;height:28px;min-width:28px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;margin-top:1px}
+.steps li p{font-size:.93rem;color:#334155;line-height:1.6}
+.steps li p strong{color:#1E293B}
+.rules-box{background:#0F172A;color:#94A3B8;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:.8rem;line-height:1.7;white-space:pre;overflow-x:auto;margin-top:8px;border:1px solid #1E293B}
+textarea.cfg-input{width:100%;height:120px;border:2px solid #E2E8F0;border-radius:10px;padding:12px;font-family:monospace;font-size:.82rem;resize:vertical;transition:border .2s;margin-top:8px}
+textarea.cfg-input:focus{outline:none;border-color:#6366F1}
+#setupErr{color:#EF4444;font-size:.87rem;margin-top:8px;display:none;background:#FEE2E2;border-radius:8px;padding:10px 12px}
+
+/* ── Login screen ── */
+.login-card{max-width:420px;text-align:center}
+.login-card .logo{font-size:3.5rem;margin-bottom:8px}
+.login-card h1{font-size:2.2rem;margin-bottom:6px}
+.file-warn{background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;padding:14px;font-size:.84rem;color:#92400E;margin-bottom:20px;text-align:left}
+.file-warn strong{display:block;margin-bottom:4px}
+.file-warn a{color:#6366F1;font-weight:700}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:14px 24px;font-size:1rem;font-weight:600;color:#1E293B;cursor:pointer;width:100%;transition:all .2s;margin-bottom:16px}
+.g-btn:hover{border-color:#6366F1;box-shadow:0 4px 14px rgba(99,102,241,.2);transform:translateY(-1px)}
+.link-btn{background:none;border:none;color:#6366F1;cursor:pointer;font-size:.9rem;text-decoration:underline;padding:4px}
+
+/* ── Loading ── */
+.spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-card{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:20px;padding:52px;display:flex;flex-direction:column;align-items:center;gap:20px}
+.load-card p{color:#fff;font-size:1.1rem;font-weight:500}
+
+/* ── Sidebar ── */
+#sidebar{width:242px;min-width:242px;background:#1E293B;color:#fff;display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+.brand{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-name{font-size:1.15rem;font-weight:700;color:#fff}
+.brand-sub{font-size:.76rem;color:#94A3B8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav{flex:1;padding:10px 0;overflow-y:auto}
+nav a{display:flex;align-items:center;gap:11px;padding:11px 20px;color:#94A3B8;text-decoration:none;font-size:.9rem;transition:all .18s;cursor:pointer;border-left:3px solid transparent;user-select:none}
+nav a:hover{color:#fff;background:rgba(255,255,255,.06)}
+nav a.active{color:#fff;background:rgba(99,102,241,.22);border-left-color:#6366F1}
+nav a .ic{font-size:1.1rem;width:20px;text-align:center}
+.sidebar-user{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#6366F1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;flex-shrink:0;color:#fff}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-label{font-size:.72rem;color:#64748B}
+.icon-btn{background:none;border:none;color:#64748B;cursor:pointer;padding:5px;border-radius:6px;font-size:1rem;transition:color .2s;line-height:1}
+.icon-btn:hover{color:#EF4444}
+
+/* ── Main content ── */
+#main{flex:1;overflow-y:auto;height:100vh}
+.page{display:none;padding:28px 30px}
+.page.active{display:block}
+.page-title{font-size:1.5rem;font-weight:700;color:#1E293B;margin-bottom:20px}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;border:none;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .18s;line-height:1}
+.btn-primary{background:#6366F1;color:#fff}
+.btn-primary:hover{background:#4F46E5;transform:translateY(-1px)}
+.btn-danger{background:#EF4444;color:#fff}
+.btn-danger:hover{background:#DC2626}
+.btn-ghost{background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}
+.btn-ghost:hover{background:#E2E8F0}
+.btn-success{background:#10B981;color:#fff}
+.btn-success:hover{background:#059669}
+.btn-warn{background:#F59E0B;color:#fff}
+.btn-warn:hover{background:#D97706}
+.btn-sm{padding:6px 11px;font-size:.8rem}
+
+/* ── Cards / Stats ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.stat-val{font-size:2rem;font-weight:800;color:#6366F1}
+.stat-label{font-size:.82rem;color:#64748B;margin-top:4px}
+
+/* ── Tables ── */
+.tbl-wrap{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{background:#F8FAFC;padding:11px 14px;text-align:left;font-size:.8rem;color:#64748B;font-weight:700;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+td{padding:11px 14px;font-size:.87rem;color:#1E293B;border-bottom:1px solid #F1F5F9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFBFF}
+
+/* ── Forms / Modals ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:560px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 25px 70px rgba(0,0,0,.3)}
+.modal-hd{padding:20px 24px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hd h3{font-size:1.05rem;font-weight:700}
+.modal-body{padding:22px 24px;overflow-y:auto;flex:1}
+.modal-ft{padding:14px 24px;border-top:1px solid #E2E8F0;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
+.close-btn{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#94A3B8;line-height:1;padding:2px}
+.close-btn:hover{color:#1E293B}
+.form-row{margin-bottom:13px}
+.form-row label{display:block;font-size:.8rem;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 12px;border:2px solid #E2E8F0;border-radius:8px;font-size:.9rem;color:#1E293B;transition:border .2s;background:#fff;font-family:inherit}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:#6366F1}
+.form-row textarea{resize:vertical;min-height:68px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tabs{display:flex;gap:2px;background:#F1F5F9;border-radius:10px;padding:4px;margin-bottom:18px}
+.tab{flex:1;padding:8px 10px;border:none;background:none;border-radius:7px;font-size:.84rem;cursor:pointer;color:#64748B;font-weight:500;transition:all .18s}
+.tab.active{background:#fff;color:#1E293B;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Schedule grid ── */
+.cal-outer{overflow-x:auto;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.cal-grid{display:grid;grid-template-columns:58px repeat(7,1fr);min-width:720px;background:#fff}
+.cal-hd{background:#F8FAFC;padding:10px 6px;text-align:center;font-size:.8rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;border-right:1px solid #F1F5F9;position:sticky;top:0;z-index:2}
+.cal-hd:first-child{border-right:2px solid #E2E8F0}
+.cal-hd.today-col{color:#6366F1;background:#EEF2FF}
+.time-label{background:#F8FAFC;padding:6px 8px;text-align:right;font-size:.7rem;color:#94A3B8;border-right:2px solid #E2E8F0;border-bottom:1px solid #F1F5F9}
+.cal-cell{border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;min-height:46px;padding:2px 3px;cursor:pointer;transition:background .12s}
+.cal-cell:hover{background:#F8FAFF}
+.cal-cell:last-child{border-right:none}
+.cal-event{border-radius:5px;padding:3px 6px;font-size:.73rem;font-weight:600;margin-bottom:2px;cursor:pointer;color:#fff;line-height:1.35;word-break:break-word}
+.cal-event:hover{filter:brightness(1.12)}
+
+/* ── Progress bars ── */
+.prog-bar{height:8px;background:#E2E8F0;border-radius:99px;overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:99px;transition:width .4s}
+.prog-green{background:#10B981}
+.prog-yellow{background:#F59E0B}
+.prog-red{background:#EF4444}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:.74rem;font-weight:700}
+.badge-green{background:#DCFCE7;color:#166534}
+.badge-yellow{background:#FEF3C7;color:#92400E}
+.badge-red{background:#FEE2E2;color:#991B1B}
+.badge-blue{background:#DBEAFE;color:#1E40AF}
+.badge-gray{background:#F1F5F9;color:#475569}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* ── Invoice print ── */
+.invoice-preview{background:#fff;border-radius:14px;padding:36px;box-shadow:0 1px 4px rgba(0,0,0,.07);max-width:720px}
+@media print{
+  #sidebar,#pgDash,#pgStudents,#pgSchedule,#pgSessions,#pgProgress,#pgSettings,#printClose,#invoiceListWrap{display:none!important}
+  .screen{display:block!important;min-height:auto}
+  #scApp{display:block!important}
+  #main{overflow:visible;height:auto}
+  #pgInvoice{display:block!important;padding:0}
+  .invoice-preview{box-shadow:none;border-radius:0;max-width:100%;padding:20px}
+  .no-print{display:none!important}
+}
+
+/* ── Toast ── */
+#toastWrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+.toast{background:#1E293B;color:#fff;padding:12px 18px;border-radius:10px;font-size:.87rem;box-shadow:0 4px 16px rgba(0,0,0,.25);animation:slideIn .3s ease;max-width:320px}
+@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}
+
+/* ── Misc ── */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-hd h2{font-size:.97rem;font-weight:700;color:#1E293B}
+.color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filter-row select,.filter-row input{padding:8px 12px;border:2px solid #E2E8F0;border-radius:8px;font-size:.86rem;color:#1E293B;background:#fff;font-family:inherit}
+.filter-row select:focus,.filter-row input:focus{outline:none;border-color:#6366F1}
+.empty{text-align:center;padding:36px 20px;color:#94A3B8;font-size:.92rem}
+.chip{display:inline-flex;align-items:center;background:#EEF2FF;color:#4F46E5;border-radius:99px;padding:2px 9px;font-size:.76rem;font-weight:600;margin:1px 2px}
+hr.div{border:none;border-top:1px solid #E2E8F0;margin:18px 0}
+.today-list{display:flex;flex-direction:column;gap:10px}
+.today-item{background:#fff;border-radius:12px;padding:13px 16px;box-shadow:0 1px 4px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.today-left{display:flex;align-items:center;gap:12px}
+.today-time{font-size:.8rem;color:#64748B;min-width:80px}
+.today-name{font-weight:700;font-size:.92rem}
+.today-sub{font-size:.79rem;color:#94A3B8;margin-top:1px}
+.rec-badge{display:inline-flex;align-items:center;gap:4px;background:#F0FDF4;color:#166534;border-radius:99px;padding:2px 9px;font-size:.75rem;font-weight:600}
+.card-panel{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:18px}
+.plan-item{background:#fff;border-radius:10px;padding:13px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07);border-left:3px solid #6366F1}
+.note-item{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     SCREEN 1: FIREBASE SETUP
+═══════════════════════════════════ -->
+<div id="scSetup" class="screen">
+  <div class="auth-card setup-card">
+    <h1>🔥 Connect Firebase</h1>
+    <p class="sub">One-time setup — follow these steps to enable cloud storage and sign-in</p>
+
+    <ol class="steps">
+      <li>
+        <p><strong>Create a Firebase project</strong><br>
+        Open <strong>console.firebase.google.com</strong> in your browser. Click <em>Add project</em>, give it a name like <em>MathTutorPro</em>, click through (you can disable Google Analytics), then click <em>Create project</em>.</p>
+      </li>
+      <li>
+        <p><strong>Enable Google Sign-In</strong><br>
+        In the left sidebar click <em>Authentication</em> → <em>Get started</em> → <em>Sign-in method</em> tab → click <em>Google</em> → toggle <em>Enable</em> → set a support email → click <em>Save</em>.</p>
+      </li>
+      <li>
+        <p><strong>Add your authorized domain</strong><br>
+        Still in Authentication → <em>Settings</em> tab → <em>Authorized domains</em> → click <em>Add domain</em> and add your hosting URL (e.g. <em>your-app.netlify.app</em>). If testing locally with a VS Code extension like Live Server, add <em>localhost</em> or <em>127.0.0.1</em>.<br>
+        <em style="color:#64748B">Note: <code>file://</code> URLs cannot be authorized — you need a proper host. The free option is </em><strong>netlify.com/drop</strong> — just drag this file there.</p>
+      </li>
+      <li>
+        <p><strong>Create Firestore database</strong><br>
+        Left sidebar → <em>Firestore Database</em> → <em>Create database</em> → choose <em>Start in test mode</em> → pick the region nearest to you → click <em>Enable</em>.</p>
+      </li>
+      <li>
+        <p><strong>Publish security rules</strong><br>
+        In Firestore → click the <em>Rules</em> tab → replace everything with the rules below → click <em>Publish</em>:</p>
+        <div class="rules-box">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /tutors/{userId}/{document=**} {
+      allow read, write: if request.auth.uid == userId;
+    }
+  }
+}</div>
+      </li>
+      <li>
+        <p><strong>Get your Firebase config</strong><br>
+        Left sidebar → <em>Project Settings</em> (gear ⚙️ icon at the top) → scroll down to <em>Your apps</em> → click the <em>web icon</em> (<strong>&lt;/&gt;</strong>) → register your app (any nickname) → copy the <code>firebaseConfig</code> object shown.</p>
+      </li>
+      <li>
+        <p><strong>Paste your config below and connect</strong><br>
+        Paste the config object (with or without the surrounding <code>const firebaseConfig =</code> code) into the box:</p>
+        <textarea class="cfg-input" id="cfgInput" placeholder='Paste your firebaseConfig here — e.g.
+
+{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-project.firebaseapp.com",
+  "projectId": "your-project",
+  "storageBucket": "your-project.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abc123"
+}'></textarea>
+        <div id="setupErr"></div>
+        <button class="btn btn-primary" onclick="connectFirebase()" style="width:100%;margin-top:12px;padding:13px;font-size:.95rem">🔗 Connect to Firebase</button>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     SCREEN 2: LOGIN
+═══════════════════════════════════ -->
+<div id="scLogin" class="screen">
+  <div class="auth-card login-card">
+    <div class="logo">📐</div>
+    <h1>MathTutor Pro</h1>
+    <p class="sub" style="margin-bottom:22px">Your complete tutoring management hub</p>
+
+    <div id="fileWarn" class="file-warn" style="display:none">
+      <strong>⚠️ Cannot sign in from file:// URL</strong>
+      Google Sign-In requires your app to be hosted on a proper URL — it won't work when you open the HTML file directly from your computer.<br><br>
+      <strong>Free fix in 30 seconds:</strong> Go to <a href="https://app.netlify.com/drop" target="_blank">netlify.com/drop</a>, drag this HTML file onto the page, and use the URL it gives you. Then add that URL to Firebase → Authentication → Authorized domains.
+    </div>
+
+    <button class="g-btn" onclick="signIn()">
+      <svg width="20" height="20" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/>
+        <path fill="#34A853" d="M6.3 14.7l7 5.1C15.1 16 19.2 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2c-7.6 0-14.2 4.1-17.7 10.2z"/>
+        <path fill="#FBBC05" d="M24 46c5.5 0 10.5-1.8 14.4-5L31.6 35c-2.1 1.5-4.8 2.4-7.6 2.4-6.1 0-10.7-3.1-11.8-7.5l-7 5.4C7.8 41.9 15.4 46 24 46z"/>
+        <path fill="#EA4335" d="M44.5 20H24v8.5h11.8c-.5 2.7-2 5.1-4.2 6.7l6.8 5.3c4-3.7 6.6-9.2 6.6-15.5 0-1.3-.2-2.7-.5-4z"/>
+      </svg>
+      Sign in with Google
+    </button>
+
+    <button class="link-btn" onclick="resetSetup()">Change Firebase configuration</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     SCREEN 3: LOADING
+═══════════════════════════════════ -->
+<div id="scLoad" class="screen">
+  <div class="load-card">
+    <div class="spinner"></div>
+    <p>Loading your tutoring data...</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     SCREEN 4: MAIN APP
+═══════════════════════════════════ -->
+<div id="scApp" class="screen">
+
+  <!-- ── Sidebar ── -->
+  <div id="sidebar">
+    <div class="brand">
+      <div class="brand-name">📐 MathTutor Pro</div>
+      <div class="brand-sub" id="brandSub">Your Tutoring Hub</div>
+    </div>
+    <nav>
+      <a onclick="nav('pgDash')" class="active" data-page="pgDash"><span class="ic">📊</span>Dashboard</a>
+      <a onclick="nav('pgStudents')" data-page="pgStudents"><span class="ic">👩‍🎓</span>Students</a>
+      <a onclick="nav('pgSchedule')" data-page="pgSchedule"><span class="ic">📅</span>Schedule</a>
+      <a onclick="nav('pgSessions')" data-page="pgSessions"><span class="ic">📝</span>Session Logs</a>
+      <a onclick="nav('pgProgress')" data-page="pgProgress"><span class="ic">📈</span>Progress &amp; Grades</a>
+      <a onclick="nav('pgInvoice')" data-page="pgInvoice"><span class="ic">🧾</span>Invoices</a>
+      <a onclick="nav('pgSettings')" data-page="pgSettings"><span class="ic">⚙️</span>Settings</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">Tutor</div>
+        <div class="user-label">Signed in</div>
+      </div>
+      <button class="icon-btn" title="Sign Out" onclick="signOut()">⎋</button>
+    </div>
+  </div>
+
+  <!-- ── Main content area ── -->
+  <div id="main">
+
+    <!-- ───────── DASHBOARD ───────── -->
+    <div id="pgDash" class="page active">
+      <div class="page-title">Dashboard</div>
+      <div class="stat-grid" id="dashStats"></div>
+      <div class="form-grid" style="gap:20px;margin-bottom:20px">
+        <div>
+          <div class="section-hd"><h2>📅 Today's Schedule</h2></div>
+          <div class="today-list" id="todayList"><div class="empty">No sessions today</div></div>
+        </div>
+        <div>
+          <div class="section-hd"><h2>📋 Next Session Plans</h2></div>
+          <div id="nextPlanList"><div class="empty">No upcoming plans noted</div></div>
+        </div>
+      </div>
+      <div class="section-hd"><h2>👩‍🎓 Student Snapshot</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Grade</th><th>Subjects</th><th>Sessions</th><th>Status</th></tr></thead>
+          <tbody id="snapBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ───────── STUDENTS ───────── -->
+    <div id="pgStudents" class="page">
+      <div class="section-hd" style="margin-bottom:18px">
+        <div class="page-title" style="margin:0">Students</div>
+        <button class="btn btn-primary" onclick="openStudentModal()">+ Add Student</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Grade</th><th>Subjects</th><th>Rate/hr</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="studentBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ───────── SCHEDULE ───────── -->
+    <div id="pgSchedule" class="page">
+      <div class="section-hd" style="margin-bottom:6px">
+        <div class="page-title" style="margin:0">Weekly Schedule</div>
+        <button class="btn btn-primary" onclick="openBookModal()">+ Book Slot</button>
+      </div>
+      <p style="font-size:.83rem;color:#64748B;margin-bottom:14px">Click any cell to book a slot. Click a booked session to view or log it.</p>
+      <div class="cal-outer" id="calOuter"></div>
+    </div>
+
+    <!-- ───────── SESSION LOGS ───────── -->
+    <div id="pgSessions" class="page">
+      <div class="section-hd" style="margin-bottom:16px">
+        <div class="page-title" style="margin:0">Session Logs</div>
+        <button class="btn btn-primary" onclick="openSessionModal()">+ Log Session</button>
+      </div>
+      <div class="filter-row">
+        <select id="sesFilterStudent" onchange="renderSessions()"><option value="">All Students</option></select>
+        <select id="sesFilterMonth" onchange="renderSessions()"><option value="">All Months</option></select>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Hrs</th><th>Topics</th><th>Attendance</th><th>Actions</th></tr></thead>
+          <tbody id="sessionBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ───────── PROGRESS & GRADES ───────── -->
+    <div id="pgProgress" class="page">
+      <div class="section-hd" style="margin-bottom:16px">
+        <div class="page-title" style="margin:0">Progress &amp; Grades</div>
+        <button class="btn btn-primary" onclick="openGradeModal()">+ Add Assessment</button>
+      </div>
+      <div class="filter-row">
+        <select id="progStudent" onchange="renderProgress()"><option value="">Select a student...</option></select>
+      </div>
+      <div id="progressContent"><div class="empty">Select a student above to view their progress and assessments</div></div>
+    </div>
+
+    <!-- ───────── INVOICES ───────── -->
+    <div id="pgInvoice" class="page">
+      <div class="section-hd" style="margin-bottom:16px">
+        <div class="page-title" style="margin:0">Invoices</div>
+      </div>
+      <div class="filter-row no-print">
+        <select id="invStudent"><option value="">Select Student...</option></select>
+        <select id="invMonth"></select>
+        <button class="btn btn-primary" onclick="generateInvoice()">Generate Invoice</button>
+      </div>
+      <div id="invoiceListWrap">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Invoice #</th><th>Student</th><th>Period</th><th>Sessions</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="invoiceBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="invoicePreviewWrap" style="display:none;margin-top:20px">
+        <div style="display:flex;gap:10px;margin-bottom:16px" class="no-print">
+          <button class="btn btn-ghost" id="printClose" onclick="closeInvoicePreview()">← Back to list</button>
+          <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        </div>
+        <div class="invoice-preview" id="invoicePrintArea"></div>
+      </div>
+    </div>
+
+    <!-- ───────── SETTINGS ───────── -->
+    <div id="pgSettings" class="page">
+      <div class="page-title">Settings</div>
+      <div style="max-width:560px">
+        <div class="card-panel">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:#1E293B">👤 Tutor Profile</h3>
+          <div class="form-row"><label>Your Name</label><input id="setName" placeholder="Jane Smith"></div>
+          <div class="form-row"><label>Business / Practice Name</label><input id="setBiz" placeholder="Jane's Math Academy"></div>
+          <div class="form-grid">
+            <div class="form-row"><label>Email</label><input id="setEmail" type="email" placeholder="jane@example.com"></div>
+            <div class="form-row"><label>Phone</label><input id="setPhone" placeholder="+27 82 000 0000"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-row"><label>Default Hourly Rate</label><input id="setRate" type="number" min="0" placeholder="350"></div>
+            <div class="form-row"><label>Currency Symbol</label><input id="setCur" placeholder="R" maxlength="5"></div>
+          </div>
+        </div>
+        <div class="card-panel">
+          <h3 style="font-size:1rem;margin-bottom:16px;color:#1E293B">🏦 Banking / Payment Details</h3>
+          <div class="form-row"><label>Bank Name</label><input id="setBank" placeholder="First National Bank"></div>
+          <div class="form-grid">
+            <div class="form-row"><label>Account Number</label><input id="setAccNo" placeholder="62000000000"></div>
+            <div class="form-row"><label>Branch Code</label><input id="setAccBr" placeholder="250655"></div>
+          </div>
+          <div class="form-row"><label>Account Type</label><input id="setAccType" placeholder="Cheque / Savings"></div>
+          <div class="form-row"><label>Invoice Footer Note</label><textarea id="setFooter" rows="2" placeholder="Please make payment within 7 days. Thank you!"></textarea></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+          <button class="btn btn-danger" onclick="signOut()">⎋ Sign Out</button>
+          <button class="link-btn" onclick="resetSetup()">Change Firebase Config</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /scApp -->
+
+<!-- Toast container -->
+<div id="toastWrap"></div>
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+
+<!-- Student Modal -->
+<div class="overlay" id="studentModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3 id="studentModalTitle">Add Student</h3>
+      <button class="close-btn" onclick="closeModal('studentModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('stu',0,this)">👤 Student Info</button>
+        <button class="tab" onclick="switchTab('stu',1,this)">👨‍👩‍👧 Parent Info</button>
+      </div>
+      <div id="stuTab0" class="tab-panel active">
+        <div class="form-grid">
+          <div class="form-row"><label>First Name *</label><input id="sfFirst" placeholder="Emma"></div>
+          <div class="form-row"><label>Last Name *</label><input id="sfLast" placeholder="Thompson"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Grade / Year</label><input id="sfGrade" placeholder="Grade 10"></div>
+          <div class="form-row"><label>Hourly Rate</label><input id="sfRate" type="number" min="0" placeholder="350"></div>
+        </div>
+        <div class="form-row"><label>Subjects (comma separated)</label><input id="sfSubs" placeholder="Mathematics, Physics"></div>
+        <div class="form-grid">
+          <div class="form-row"><label>Color Tag</label><input id="sfColor" type="color" value="#6366F1"></div>
+          <div class="form-row"><label>Status</label>
+            <select id="sfStatus">
+              <option value="active">Active</option>
+              <option value="trial">Trial</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>Notes</label><textarea id="sfNotes" placeholder="Any relevant notes..."></textarea></div>
+      </div>
+      <div id="stuTab1" class="tab-panel">
+        <div class="form-grid">
+          <div class="form-row"><label>Parent / Guardian Name</label><input id="sfParent" placeholder="Mr. Thompson"></div>
+          <div class="form-row"><label>Relationship</label><input id="sfRel" placeholder="Father"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Parent Email</label><input id="sfPEmail" type="email" placeholder="parent@email.com"></div>
+          <div class="form-row"><label>Parent Phone</label><input id="sfPPhone" placeholder="+27 82 000 0000"></div>
+        </div>
+        <div class="form-row"><label>Postal Address (for invoices)</label>
+          <textarea id="sfAddr" placeholder="123 Main Street&#10;Suburb, City&#10;Postal Code"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal('studentModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStudent()">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Session Log Modal -->
+<div class="overlay" id="sessionModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3 id="sessionModalTitle">Log Session</h3>
+      <button class="close-btn" onclick="closeModal('sessionModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('ses',0,this)">📋 Session Details</button>
+        <button class="tab" onclick="switchTab('ses',1,this)">📝 Notes &amp; Plans</button>
+      </div>
+      <div id="sesTab0" class="tab-panel active">
+        <div class="form-row"><label>Student *</label>
+          <select id="sesStudent"><option value="">Select student...</option></select>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Date *</label><input id="sesDate" type="date"></div>
+          <div class="form-row"><label>Attendance</label>
+            <select id="sesAtt">
+              <option value="present">✅ Present</option>
+              <option value="late">🕐 Late</option>
+              <option value="absent">❌ Absent</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Start Time</label><input id="sesStart" type="time"></div>
+          <div class="form-row"><label>End Time</label><input id="sesEnd" type="time"></div>
+        </div>
+        <div class="form-row"><label>Topics Covered</label>
+          <input id="sesTopic" placeholder="e.g. Quadratic equations, factorisation...">
+        </div>
+        <div class="form-row"><label>Homework Set</label>
+          <input id="sesHw" placeholder="e.g. Exercises 5.1 – 5.3">
+        </div>
+      </div>
+      <div id="sesTab1" class="tab-panel">
+        <div class="form-row"><label>✅ What went well</label>
+          <textarea id="sesWell" placeholder="Student understood factorisation quickly..."></textarea>
+        </div>
+        <div class="form-row"><label>⚠️ Needs more work</label>
+          <textarea id="sesWork" placeholder="Struggled with the quadratic formula..."></textarea>
+        </div>
+        <div class="form-row"><label>📋 Next session plan</label>
+          <textarea id="sesPlan" placeholder="Review homework, introduce completing the square..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal('sessionModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSession()">Save Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- Book Schedule Modal -->
+<div class="overlay" id="bookModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hd">
+      <h3>Book Session Slot</h3>
+      <button class="close-btn" onclick="closeModal('bookModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label>Student *</label>
+        <select id="bkStudent"><option value="">Select student...</option></select>
+      </div>
+      <div class="form-row"><label>Day of Week</label>
+        <select id="bkDay">
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+          <option value="0">Sunday</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Start Time</label><input id="bkStart" type="time" value="08:00"></div>
+        <div class="form-row"><label>End Time</label><input id="bkEnd" type="time" value="09:00"></div>
+      </div>
+      <div class="form-row">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;font-size:.88rem">
+          <input type="checkbox" id="bkRecurring" checked style="width:auto">
+          Recurring every week
+        </label>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal('bookModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBook()">Book Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- Grade / Assessment Modal -->
+<div class="overlay" id="gradeModal">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-hd">
+      <h3>Add Assessment</h3>
+      <button class="close-btn" onclick="closeModal('gradeModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label>Student *</label>
+        <select id="grStudent"><option value="">Select student...</option></select>
+      </div>
+      <div class="form-row"><label>Assessment Name *</label>
+        <input id="grName" placeholder="e.g. Test 3 — Quadratics">
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Date</label><input id="grDate" type="date"></div>
+        <div class="form-row"><label>Subject</label><input id="grSub" placeholder="Mathematics"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Score Obtained</label><input id="grScore" type="number" min="0" placeholder="72"></div>
+        <div class="form-row"><label>Total Marks</label><input id="grTotal" type="number" min="1" placeholder="100"></div>
+      </div>
+      <div class="form-row"><label>Notes</label>
+        <textarea id="grNotes" placeholder="Student showed improvement in..."></textarea>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal('gradeModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGrade()">Save Assessment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Slot Detail Modal -->
+<div class="overlay" id="slotModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hd">
+      <h3 id="slotTitle">Session Slot</h3>
+      <button class="close-btn" onclick="closeModal('slotModal')">✕</button>
+    </div>
+    <div class="modal-body" id="slotBody"></div>
+    <div class="modal-ft" id="slotFt"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let fbAuth, fbDB, UID;
+let DB = {
+  students:  [],
+  sessions:  [],
+  schedules: [],
+  grades:    [],
+  invoices:  [],
+  settings: {
+    rate: 350,
+    cur: 'R',
+    footer: 'Please make payment within 7 days. Thank you!'
+  }
+};
+let editingStudentId = null;
+let editingSessionId = null;
+
+// ════════════════════════════════════════
+// FIREBASE
+// ════════════════════════════════════════
+function initFirebase(config) {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(config);
+    fbAuth = firebase.auth();
+    fbDB   = firebase.firestore();
+    fbDB.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+    return true;
+  } catch (e) {
+    console.error('Firebase init error:', e);
+    return false;
+  }
+}
+
+function col(name) {
+  return fbDB.collection('tutors').doc(UID).collection(name);
+}
+function settingsRef() {
+  return fbDB.collection('tutors').doc(UID).collection('meta').doc('settings');
+}
+
+async function loadAllData() {
+  const [sSnap, sesSnap, schSnap, gSnap, invSnap, setSnap] = await Promise.all([
+    col('students').get(),
+    col('sessions').get(),
+    col('schedules').get(),
+    col('grades').get(),
+    col('invoices').get(),
+    settingsRef().get()
+  ]);
+  DB.students  = sSnap.docs.map(d => d.data());
+  DB.sessions  = sesSnap.docs.map(d => d.data());
+  DB.schedules = schSnap.docs.map(d => d.data());
+  DB.grades    = gSnap.docs.map(d => d.data());
+  DB.invoices  = invSnap.docs.map(d => d.data());
+  if (setSnap.exists) DB.settings = { ...DB.settings, ...setSnap.data() };
+}
+
+// Fire-and-forget Firestore writes
+function fsSet(c, data) {
+  col(c).doc(data.id).set(data).catch(() => toast('⚠️ Sync error — check your connection'));
+}
+function fsDel(c, id) {
+  col(c).doc(id).delete().catch(() => toast('⚠️ Sync error — check your connection'));
+}
+function fsSaveSettings(data) {
+  settingsRef().set(data).catch(() => toast('⚠️ Could not save settings to cloud'));
+}
+
+// ════════════════════════════════════════
+// AUTH FLOW
+// ════════════════════════════════════════
+window.onload = function () {
+  if (location.protocol === 'file:') {
+    const w = document.getElementById('fileWarn');
+    if (w) w.style.display = 'block';
+  }
+  const saved = localStorage.getItem('mtp_fb_cfg');
+  if (saved) {
+    try {
+      const cfg = JSON.parse(saved);
+      if (initFirebase(cfg)) {
+        showSc('scLoad');
+        fbAuth.onAuthStateChanged(onAuth);
+        return;
+      }
+    } catch (e) { /* fall through to setup */ }
+  }
+  showSc('scSetup');
+};
+
+async function onAuth(user) {
+  if (!user) { showSc('scLogin'); return; }
+  UID = user.uid;
+  showSc('scLoad');
+  try {
+    await loadAllData();
+  } catch (e) {
+    console.error('loadAllData error:', e);
+    toast('Could not load data — check Firestore rules and connection');
+  }
+  document.getElementById('userAvatar').textContent = (user.displayName || 'U')[0].toUpperCase();
+  document.getElementById('userName').textContent   = user.displayName || 'Tutor';
+  document.getElementById('brandSub').textContent   = DB.settings.biz || DB.settings.name || 'Your Tutoring Hub';
+  showSc('scApp');
+  fillStudentSelects();
+  fillMonthSelects();
+  loadSettingsForm();
+  renderDash();
+}
+
+function connectFirebase() {
+  const raw   = document.getElementById('cfgInput').value.trim();
+  const errEl = document.getElementById('setupErr');
+  errEl.style.display = 'none';
+  errEl.textContent   = '';
+
+  if (!raw) {
+    showErr('Please paste your Firebase config first.');
+    return;
+  }
+
+  // Try to extract JSON object from various formats
+  let jsonStr = raw;
+  // Format: const firebaseConfig = { ... };
+  let m = raw.match(/(?:const|var|let)\s+\w+\s*=\s*(\{[\s\S]*?\})\s*;?/);
+  if (m) jsonStr = m[1];
+  // Format: firebaseConfig: { ... }  or  firebaseConfig = { ... }
+  if (!m) {
+    m = raw.match(/\w+\s*[=:]\s*(\{[\s\S]*?\})/);
+    if (m) jsonStr = m[1];
+  }
+
+  let config;
+  try {
+    config = JSON.parse(jsonStr);
+  } catch (e) {
+    showErr('❌ Could not parse config JSON. Make sure you paste the full { ... } object. Error: ' + e.message);
+    return;
+  }
+  if (!config.apiKey || !config.projectId) {
+    showErr('❌ Config must include both "apiKey" and "projectId". Double-check what you pasted.');
+    return;
+  }
+
+  localStorage.setItem('mtp_fb_cfg', JSON.stringify(config));
+  if (initFirebase(config)) {
+    showSc('scLoad');
+    fbAuth.onAuthStateChanged(onAuth);
+  } else {
+    showErr('❌ Firebase failed to initialize. Your config may be incorrect.');
+    localStorage.removeItem('mtp_fb_cfg');
+  }
+
+  function showErr(msg) {
+    errEl.textContent   = msg;
+    errEl.style.display = 'block';
+  }
+}
+
+function signIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(e => {
+    toast('Sign-in failed: ' + e.message);
+  });
+}
+
+function signOut() {
+  firebase.auth().signOut().then(() => {
+    DB = { students:[], sessions:[], schedules:[], grades:[], invoices:[],
+           settings:{ rate:350, cur:'R', footer:'Please make payment within 7 days. Thank you!' } };
+    UID = null;
+    showSc('scLogin');
+  });
+}
+
+function resetSetup() {
+  localStorage.removeItem('mtp_fb_cfg');
+  showSc('scSetup');
+}
+
+// ════════════════════════════════════════
+// UI UTILITIES
+// ════════════════════════════════════════
+function showSc(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function nav(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === pageId);
+  });
+  const renders = {
+    pgDash:     renderDash,
+    pgStudents: renderStudents,
+    pgSchedule: renderCalendar,
+    pgSessions: renderSessions,
+    pgProgress: renderProgress,
+    pgInvoice:  renderInvoiceList,
+    pgSettings: loadSettingsForm
+  };
+  if (renders[pageId]) renders[pageId]();
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function switchTab(group, idx, btn) {
+  const prefix = group === 'stu' ? 'stuTab' : 'sesTab';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+  const modalId = group === 'stu' ? 'studentModal' : 'sessionModal';
+  document.querySelectorAll('#' + modalId + ' .tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+}
+
+// ── Helpers ──
+function uid()   { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function cur()   { return DB.settings.cur || 'R'; }
+function calcH(start, end) {
+  if (!start || !end) return 0;
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  return Math.max(0, (eh * 60 + em - sh * 60 - sm) / 60);
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-ZA', { day:'2-digit', month:'short', year:'numeric' });
+}
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+function monthKey(d)      { return d ? d.slice(0, 7) : ''; }
+function monthLabel(ym)   {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  return new Date(+y, +m - 1, 1).toLocaleDateString('en-US', { month:'long', year:'numeric' });
+}
+function todayStr()       { return new Date().toISOString().slice(0, 10); }
+function studentName(id)  {
+  const s = DB.students.find(s => s.id === id);
+  return s ? `${s.first} ${s.last}` : '—';
+}
+function attBadge(a) {
+  const map = { absent:'badge-red', late:'badge-yellow', present:'badge-green' };
+  const labels = { absent:'Absent', late:'Late', present:'Present' };
+  const cls = map[a] || 'badge-green';
+  return `<span class="badge ${cls}">${labels[a] || 'Present'}</span>`;
+}
+
+function toast(msg, dur = 3500) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(110%)'; el.style.transition = '.3s'; setTimeout(() => el.remove(), 300); }, dur);
+}
+
+// ── Populate selects ──
+function fillStudentSelects() {
+  const configs = [
+    { id:'sesStudent',       placeholder:'Select student...',  all:false, activeOnly:true  },
+    { id:'sesFilterStudent', placeholder:'All Students',       all:true,  activeOnly:false },
+    { id:'bkStudent',        placeholder:'Select student...',  all:false, activeOnly:true  },
+    { id:'grStudent',        placeholder:'Select student...',  all:false, activeOnly:false },
+    { id:'progStudent',      placeholder:'Select a student...', all:false, activeOnly:false },
+    { id:'invStudent',       placeholder:'Select Student...', all:false, activeOnly:true  },
+  ];
+  configs.forEach(({ id, placeholder, all, activeOnly }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const prev = el.value;
+    el.innerHTML = `<option value="">${placeholder}</option>`;
+    const list = activeOnly ? DB.students.filter(s => s.status !== 'inactive') : DB.students;
+    list.forEach(s => {
+      el.innerHTML += `<option value="${s.id}">${s.first} ${s.last}</option>`;
+    });
+    if (prev) el.value = prev;
+  });
+}
+
+function fillMonthSelects() {
+  const now = todayStr().slice(0, 7);
+  const months = [...new Set([now, ...DB.sessions.map(s => monthKey(s.date)).filter(Boolean)])].sort().reverse();
+
+  const sesEl = document.getElementById('sesFilterMonth');
+  if (sesEl) {
+    const prev = sesEl.value;
+    sesEl.innerHTML = '<option value="">All Months</option>';
+    months.forEach(m => sesEl.innerHTML += `<option value="${m}">${monthLabel(m)}</option>`);
+    if (prev) sesEl.value = prev;
+  }
+
+  const invEl = document.getElementById('invMonth');
+  if (invEl) {
+    const prev = invEl.value || now;
+    invEl.innerHTML = '';
+    months.forEach(m => invEl.innerHTML += `<option value="${m}">${monthLabel(m)}</option>`);
+    invEl.value = prev;
+  }
+}
+
+// ════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════
+function renderDash() {
+  const now = new Date();
+  const curM = todayStr().slice(0, 7);
+  const activeStudents = DB.students.filter(s => s.status === 'active').length;
+  const monthSessions  = DB.sessions.filter(s => s.date && s.date.startsWith(curM) && s.att !== 'absent');
+  const monthHours     = monthSessions.reduce((a, s) => a + calcH(s.start, s.end), 0);
+  const monthRev       = monthSessions.reduce((a, s) => {
+    const st   = DB.students.find(x => x.id === s.studentId);
+    const rate = +(st && st.rate ? st.rate : DB.settings.rate) || 350;
+    return a + calcH(s.start, s.end) * rate;
+  }, 0);
+
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${activeStudents}</div><div class="stat-label">Active Students</div></div>
+    <div class="stat-card"><div class="stat-val">${monthSessions.length}</div><div class="stat-label">Sessions This Month</div></div>
+    <div class="stat-card"><div class="stat-val">${monthHours.toFixed(1)}</div><div class="stat-label">Hours This Month</div></div>
+    <div class="stat-card"><div class="stat-val">${cur()} ${monthRev.toFixed(0)}</div><div class="stat-label">Revenue This Month</div></div>
+  `;
+
+  // Today's schedule
+  const todayDow  = now.getDay();
+  const todaySch  = DB.schedules.filter(sc => +sc.day === todayDow).sort((a, b) => a.start > b.start ? 1 : -1);
+  const todayEl   = document.getElementById('todayList');
+  if (!todaySch.length) {
+    todayEl.innerHTML = '<div class="empty">No sessions scheduled today</div>';
+  } else {
+    todayEl.innerHTML = todaySch.map(sc => {
+      const st = DB.students.find(s => s.id === sc.studentId);
+      const color = st ? (st.color || '#6366F1') : '#6366F1';
+      return `<div class="today-item">
+        <div class="today-left">
+          <div class="dot" style="background:${color}"></div>
+          <div>
+            <div class="today-name">${studentName(sc.studentId)}</div>
+            <div class="today-sub">${fmtTime(sc.start)} – ${fmtTime(sc.end)} &nbsp;·&nbsp; ${calcH(sc.start, sc.end).toFixed(1)}h</div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="prefillAndLog('${sc.id}')">📝 Log</button>
+      </div>`;
+    }).join('');
+  }
+
+  // Next session plans
+  const plans = DB.sessions
+    .filter(s => s.plan && s.plan.trim())
+    .sort((a, b) => b.date > a.date ? 1 : -1)
+    .slice(0, 6);
+  const planEl = document.getElementById('nextPlanList');
+  if (!plans.length) {
+    planEl.innerHTML = '<div class="empty">No plans recorded in sessions yet</div>';
+  } else {
+    planEl.innerHTML = plans.map(s => `
+      <div class="plan-item">
+        <div style="font-weight:700;font-size:.87rem;margin-bottom:3px">${studentName(s.studentId)}</div>
+        <div style="font-size:.83rem;color:#475569">${s.plan}</div>
+        <div style="font-size:.75rem;color:#94A3B8;margin-top:5px">${fmtDate(s.date)}</div>
+      </div>`).join('');
+  }
+
+  // Student snapshot
+  const tbody = document.getElementById('snapBody');
+  if (!DB.students.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No students yet — head to Students to add your first one</td></tr>';
+    return;
+  }
+  const statusColors = { active:'badge-green', inactive:'badge-gray', trial:'badge-blue' };
+  tbody.innerHTML = DB.students.map(s => {
+    const count = DB.sessions.filter(x => x.studentId === s.id).length;
+    return `<tr>
+      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${s.first} ${s.last}</strong></td>
+      <td>${s.grade || '—'}</td>
+      <td>${(s.subjects || '').split(',').filter(Boolean).slice(0,3).map(x => `<span class="chip">${x.trim()}</span>`).join('')}</td>
+      <td>${count}</td>
+      <td><span class="badge ${statusColors[s.status] || 'badge-green'}">${s.status || 'active'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function prefillAndLog(schedId) {
+  const sc = DB.schedules.find(s => s.id === schedId);
+  if (!sc) return;
+  nav('pgSessions');
+  setTimeout(() => {
+    openSessionModal();
+    document.getElementById('sesStudent').value = sc.studentId;
+    document.getElementById('sesDate').value    = todayStr();
+    document.getElementById('sesStart').value   = sc.start || '08:00';
+    document.getElementById('sesEnd').value     = sc.end   || '09:00';
+  }, 80);
+}
+
+// ════════════════════════════════════════
+// STUDENTS
+// ════════════════════════════════════════
+function renderStudents() {
+  const tbody = document.getElementById('studentBody');
+  if (!DB.students.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">No students yet — click "Add Student" to get started</td></tr>';
+    return;
+  }
+  const statusColors = { active:'badge-green', inactive:'badge-gray', trial:'badge-blue' };
+  tbody.innerHTML = DB.students.map(s => `
+    <tr>
+      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${s.first} ${s.last}</strong></td>
+      <td>${s.grade || '—'}</td>
+      <td>${(s.subjects || '').split(',').filter(Boolean).slice(0,3).map(x => `<span class="chip">${x.trim()}</span>`).join('') || '—'}</td>
+      <td>${cur()} ${+s.rate || +DB.settings.rate || 350}/hr</td>
+      <td><span class="badge ${statusColors[s.status] || 'badge-green'}">${s.status || 'active'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-ghost" onclick="openStudentModal('${s.id}')">✏️ Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteStudent('${s.id}')" style="margin-left:5px">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openStudentModal(id) {
+  editingStudentId = id || null;
+  document.getElementById('studentModalTitle').textContent = id ? 'Edit Student' : 'Add Student';
+  const s = (id && DB.students.find(x => x.id === id)) || {};
+  const fields = {
+    sfFirst:  s.first    || '',
+    sfLast:   s.last     || '',
+    sfGrade:  s.grade    || '',
+    sfRate:   s.rate     || '',
+    sfSubs:   s.subjects || '',
+    sfColor:  s.color    || '#6366F1',
+    sfStatus: s.status   || 'active',
+    sfNotes:  s.notes    || '',
+    sfParent: s.parent   || '',
+    sfRel:    s.rel      || '',
+    sfPEmail: s.pEmail   || '',
+    sfPPhone: s.pPhone   || '',
+    sfAddr:   s.addr     || '',
+  };
+  Object.entries(fields).forEach(([id, val]) => { document.getElementById(id).value = val; });
+  switchTab('stu', 0);
+  openModal('studentModal');
+}
+
+function saveStudent() {
+  const first = document.getElementById('sfFirst').value.trim();
+  const last  = document.getElementById('sfLast').value.trim();
+  if (!first) { toast('Please enter the student\'s first name'); return; }
+  if (!last)  { toast('Please enter the student\'s last name'); return; }
+  const s = {
+    id:       editingStudentId || uid(),
+    first, last,
+    grade:    document.getElementById('sfGrade').value.trim(),
+    rate:     +document.getElementById('sfRate').value || +DB.settings.rate || 350,
+    subjects: document.getElementById('sfSubs').value.trim(),
+    color:    document.getElementById('sfColor').value,
+    status:   document.getElementById('sfStatus').value,
+    notes:    document.getElementById('sfNotes').value.trim(),
+    parent:   document.getElementById('sfParent').value.trim(),
+    rel:      document.getElementById('sfRel').value.trim(),
+    pEmail:   document.getElementById('sfPEmail').value.trim(),
+    pPhone:   document.getElementById('sfPPhone').value.trim(),
+    addr:     document.getElementById('sfAddr').value.trim(),
+  };
+  if (editingStudentId) {
+    DB.students = DB.students.map(x => x.id === editingStudentId ? s : x);
+    toast('Student updated');
+  } else {
+    DB.students.push(s);
+    toast('Student added');
+  }
+  closeModal('studentModal');
+  fillStudentSelects();
+  renderStudents();
+  renderDash();
+  fsSet('students', s);
+}
+
+function deleteStudent(id) {
+  if (!confirm('Delete this student? Their session logs and grades will remain.')) return;
+  DB.students = DB.students.filter(s => s.id !== id);
+  renderStudents();
+  renderDash();
+  fillStudentSelects();
+  fsDel('students', id);
+  toast('Student deleted');
+}
+
+// ════════════════════════════════════════
+// SCHEDULE / CALENDAR
+// ════════════════════════════════════════
+const CAL_DAYS     = [1,2,3,4,5,6,0]; // Mon → Sun display order
+const DAY_NAMES    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const CAL_HOURS    = Array.from({ length: 15 }, (_, i) => i + 7); // 7am – 9pm
+
+function renderCalendar() {
+  const todayDow = new Date().getDay();
+  let html = '<div class="cal-grid">';
+
+  // Header
+  html += '<div class="cal-hd" style="border-right:2px solid #E2E8F0">Time</div>';
+  CAL_DAYS.forEach(d => {
+    const isToday = d === todayDow;
+    html += `<div class="cal-hd${isToday ? ' today-col' : ''}">${DAY_NAMES[d]}</div>`;
+  });
+
+  // Rows
+  CAL_HOURS.forEach(h => {
+    const label = `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
+    html += `<div class="time-label">${label}</div>`;
+    CAL_DAYS.forEach(dow => {
+      const events = DB.schedules.filter(sc => +sc.day === dow && sc.start && +sc.start.split(':')[0] === h);
+      let inner = '';
+      events.forEach(sc => {
+        const st    = DB.students.find(s => s.id === sc.studentId);
+        const color = st ? (st.color || '#6366F1') : '#6366F1';
+        const name  = studentName(sc.studentId);
+        const rec   = sc.recurring ? '🔁 ' : '';
+        inner += `<div class="cal-event" style="background:${color}" onclick="event.stopPropagation();showSlot('${sc.id}')">${rec}${name}<br><small style="opacity:.85">${fmtTime(sc.start)}–${fmtTime(sc.end)}</small></div>`;
+      });
+      html += `<div class="cal-cell" onclick="openBookModalAt(${dow},${h})">${inner}</div>`;
+    });
+  });
+
+  html += '</div>';
+  document.getElementById('calOuter').innerHTML = html;
+}
+
+function openBookModal() { openBookModalAt(1, 8); }
+function openBookModalAt(dow, hour) {
+  document.getElementById('bkDay').value   = dow;
+  document.getElementById('bkStart').value = `${String(hour).padStart(2,'0')}:00`;
+  document.getElementById('bkEnd').value   = `${String(hour+1 > 21 ? 21 : hour+1).padStart(2,'0')}:00`;
+  document.getElementById('bkStudent').value    = '';
+  document.getElementById('bkRecurring').checked = true;
+  openModal('bookModal');
+}
+
+function saveBook() {
+  const studentId = document.getElementById('bkStudent').value;
+  const day   = +document.getElementById('bkDay').value;
+  const start = document.getElementById('bkStart').value;
+  const end   = document.getElementById('bkEnd').value;
+  if (!studentId) { toast('Please select a student'); return; }
+  if (!start || !end) { toast('Please set start and end times'); return; }
+  const sc = {
+    id: uid(), studentId, day, start, end,
+    recurring: document.getElementById('bkRecurring').checked
+  };
+  DB.schedules.push(sc);
+  closeModal('bookModal');
+  renderCalendar();
+  renderDash();
+  fsSet('schedules', sc);
+  toast('Session slot booked');
+}
+
+function showSlot(id) {
+  const sc = DB.schedules.find(s => s.id === id);
+  if (!sc) return;
+  const st    = DB.students.find(s => s.id === sc.studentId);
+  const color = st ? (st.color || '#6366F1') : '#6366F1';
+  document.getElementById('slotTitle').textContent = DAY_FULL[sc.day] + ' Slot';
+  document.getElementById('slotBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:16px;height:16px;border-radius:50%;background:${color};flex-shrink:0"></div>
+      <strong style="font-size:1.05rem">${studentName(sc.studentId)}</strong>
+    </div>
+    <p style="font-size:.9rem;color:#475569;margin-bottom:8px">🕐 ${fmtTime(sc.start)} – ${fmtTime(sc.end)} &nbsp;·&nbsp; ${calcH(sc.start, sc.end).toFixed(1)} hours</p>
+    ${sc.recurring ? '<span class="rec-badge">🔁 Recurring weekly</span>' : '<span class="badge badge-gray">One-time slot</span>'}
+  `;
+  document.getElementById('slotFt').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="deleteSchedule('${sc.id}')">🗑️ Remove</button>
+    <button class="btn btn-ghost" onclick="closeModal('slotModal')">Close</button>
+    <button class="btn btn-primary" onclick="closeModal('slotModal');prefillAndLog('${sc.id}')">📝 Log Session</button>
+  `;
+  openModal('slotModal');
+}
+
+function deleteSchedule(id) {
+  if (!confirm('Remove this scheduled slot?')) return;
+  DB.schedules = DB.schedules.filter(s => s.id !== id);
+  closeModal('slotModal');
+  renderCalendar();
+  renderDash();
+  fsDel('schedules', id);
+  toast('Slot removed');
+}
+
+// ════════════════════════════════════════
+// SESSION LOGS
+// ════════════════════════════════════════
+function renderSessions() {
+  const filterStu = document.getElementById('sesFilterStudent').value;
+  const filterMon = document.getElementById('sesFilterMonth').value;
+  let list = [...DB.sessions];
+  if (filterStu) list = list.filter(s => s.studentId === filterStu);
+  if (filterMon) list = list.filter(s => s.date && s.date.startsWith(filterMon));
+  list.sort((a, b) => b.date > a.date ? 1 : -1);
+
+  const tbody = document.getElementById('sessionBody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No sessions found for the selected filters</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(s => `
+    <tr>
+      <td style="white-space:nowrap">${fmtDate(s.date)}</td>
+      <td>${studentName(s.studentId)}</td>
+      <td style="white-space:nowrap">${fmtTime(s.start)}–${fmtTime(s.end)}</td>
+      <td>${calcH(s.start, s.end).toFixed(1)}h</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.topic || ''}">${s.topic || '—'}</td>
+      <td>${attBadge(s.att)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-ghost" onclick="openSessionModal('${s.id}')">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteSession('${s.id}')" style="margin-left:4px">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openSessionModal(id) {
+  editingSessionId = id || null;
+  document.getElementById('sessionModalTitle').textContent = id ? 'Edit Session' : 'Log Session';
+  const s = (id && DB.sessions.find(x => x.id === id)) || {};
+  document.getElementById('sesStudent').value = s.studentId || '';
+  document.getElementById('sesDate').value    = s.date    || todayStr();
+  document.getElementById('sesStart').value   = s.start   || '08:00';
+  document.getElementById('sesEnd').value     = s.end     || '09:00';
+  document.getElementById('sesTopic').value   = s.topic   || '';
+  document.getElementById('sesHw').value      = s.hw      || '';
+  document.getElementById('sesAtt').value     = s.att     || 'present';
+  document.getElementById('sesWell').value    = s.well    || '';
+  document.getElementById('sesWork').value    = s.work    || '';
+  document.getElementById('sesPlan').value    = s.plan    || '';
+  switchTab('ses', 0);
+  openModal('sessionModal');
+}
+
+function saveSession() {
+  const studentId = document.getElementById('sesStudent').value;
+  const date      = document.getElementById('sesDate').value;
+  if (!studentId) { toast('Please select a student'); return; }
+  if (!date)      { toast('Please enter a date'); return; }
+  const s = {
+    id:        editingSessionId || uid(),
+    studentId, date,
+    start:     document.getElementById('sesStart').value,
+    end:       document.getElementById('sesEnd').value,
+    topic:     document.getElementById('sesTopic').value.trim(),
+    hw:        document.getElementById('sesHw').value.trim(),
+    att:       document.getElementById('sesAtt').value,
+    well:      document.getElementById('sesWell').value.trim(),
+    work:      document.getElementById('sesWork').value.trim(),
+    plan:      document.getElementById('sesPlan').value.trim(),
+  };
+  if (editingSessionId) {
+    DB.sessions = DB.sessions.map(x => x.id === editingSessionId ? s : x);
+    toast('Session updated');
+  } else {
+    DB.sessions.push(s);
+    toast('Session logged');
+  }
+  closeModal('sessionModal');
+  fillMonthSelects();
+  renderSessions();
+  renderDash();
+  fsSet('sessions', s);
+}
+
+function deleteSession(id) {
+  if (!confirm('Delete this session log?')) return;
+  DB.sessions = DB.sessions.filter(s => s.id !== id);
+  fillMonthSelects();
+  renderSessions();
+  renderDash();
+  fsDel('sessions', id);
+  toast('Session deleted');
+}
+
+// ════════════════════════════════════════
+// PROGRESS & GRADES
+// ════════════════════════════════════════
+function renderProgress() {
+  const studentId = document.getElementById('progStudent').value;
+  const wrap      = document.getElementById('progressContent');
+  if (!studentId) {
+    wrap.innerHTML = '<div class="empty">Select a student above to view their progress and assessments</div>';
+    return;
+  }
+
+  const allSess = DB.sessions.filter(s => s.studentId === studentId).sort((a,b) => b.date > a.date ? 1 : -1);
+  const attSess = allSess.filter(s => s.att !== 'absent');
+  const grades  = DB.grades.filter(g => g.studentId === studentId).sort((a,b) => b.date > a.date ? 1 : -1);
+  const hours   = attSess.reduce((a, s) => a + calcH(s.start, s.end), 0);
+  const avgPct  = grades.length ? grades.reduce((a, g) => a + g.score / g.total * 100, 0) / grades.length : null;
+
+  const statColor = avgPct === null ? '#6366F1' : avgPct >= 75 ? '#10B981' : avgPct >= 50 ? '#F59E0B' : '#EF4444';
+
+  wrap.innerHTML = `
+    <div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-val">${allSess.length}</div><div class="stat-label">Total Sessions</div></div>
+      <div class="stat-card"><div class="stat-val">${attSess.length}</div><div class="stat-label">Attended Sessions</div></div>
+      <div class="stat-card"><div class="stat-val">${hours.toFixed(1)}</div><div class="stat-label">Hours Tutored</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:${statColor}">${avgPct !== null ? avgPct.toFixed(1) + '%' : '—'}</div><div class="stat-label">Avg Assessment Score</div></div>
+    </div>
+
+    <div class="section-hd"><h2>📊 Assessments</h2></div>
+    <div class="tbl-wrap" style="margin-bottom:22px">
+      <table>
+        <thead><tr><th>Assessment</th><th>Date</th><th>Subject</th><th>Score</th><th>Progress</th><th></th></tr></thead>
+        <tbody>
+          ${grades.length ? grades.map(g => {
+            const pct    = Math.round(g.score / g.total * 100);
+            const cls    = pct >= 75 ? 'prog-green' : pct >= 50 ? 'prog-yellow' : 'prog-red';
+            const badge  = pct >= 75 ? 'badge-green' : pct >= 50 ? 'badge-yellow' : 'badge-red';
+            return `<tr>
+              <td><strong>${g.name}</strong>${g.notes ? `<br><small style="color:#94A3B8">${g.notes}</small>` : ''}</td>
+              <td style="white-space:nowrap">${fmtDate(g.date)}</td>
+              <td>${g.subject || '—'}</td>
+              <td><span class="badge ${badge}">${g.score}/${g.total} (${pct}%)</span></td>
+              <td style="min-width:120px"><div class="prog-bar"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div></td>
+              <td><button class="btn btn-sm btn-danger" onclick="deleteGrade('${g.id}')">🗑️</button></td>
+            </tr>`;
+          }).join('') : '<tr><td colspan="6" class="empty">No assessments recorded yet</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-hd"><h2>📝 Session Notes (most recent first)</h2></div>
+    ${allSess.slice(0, 8).map(s => `
+      <div class="note-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:.9rem">${fmtDate(s.date)}</strong>
+          ${attBadge(s.att)}
+        </div>
+        ${s.topic ? `<p style="font-size:.84rem;color:#475569;margin-bottom:5px">📚 <strong>Topics:</strong> ${s.topic}</p>` : ''}
+        ${s.well  ? `<p style="font-size:.84rem;color:#166534;margin-bottom:4px">✅ ${s.well}</p>` : ''}
+        ${s.work  ? `<p style="font-size:.84rem;color:#92400E;margin-bottom:4px">⚠️ ${s.work}</p>` : ''}
+        ${s.plan  ? `<p style="font-size:.84rem;color:#1E40AF;margin-bottom:4px">📋 Next: ${s.plan}</p>` : ''}
+        ${s.hw    ? `<p style="font-size:.84rem;color:#475569">📌 HW: ${s.hw}</p>` : ''}
+        ${!s.topic && !s.well && !s.work && !s.plan && !s.hw ? '<p style="font-size:.83rem;color:#94A3B8">No notes recorded</p>' : ''}
+      </div>`).join('') || '<div class="empty">No sessions logged yet</div>'}
+  `;
+}
+
+function openGradeModal() {
+  const curStu = document.getElementById('progStudent').value;
+  document.getElementById('grStudent').value = curStu || '';
+  document.getElementById('grName').value    = '';
+  document.getElementById('grDate').value    = todayStr();
+  document.getElementById('grSub').value     = '';
+  document.getElementById('grScore').value   = '';
+  document.getElementById('grTotal').value   = '100';
+  document.getElementById('grNotes').value   = '';
+  openModal('gradeModal');
+}
+
+function saveGrade() {
+  const studentId = document.getElementById('grStudent').value;
+  const name      = document.getElementById('grName').value.trim();
+  const score     = parseFloat(document.getElementById('grScore').value);
+  const total     = parseFloat(document.getElementById('grTotal').value);
+  if (!studentId)         { toast('Please select a student'); return; }
+  if (!name)              { toast('Please enter the assessment name'); return; }
+  if (isNaN(score))       { toast('Please enter the score obtained'); return; }
+  if (!total || total<=0) { toast('Please enter the total marks'); return; }
+  const g = {
+    id: uid(), studentId, name,
+    date:    document.getElementById('grDate').value,
+    subject: document.getElementById('grSub').value.trim(),
+    score, total,
+    notes:   document.getElementById('grNotes').value.trim(),
+  };
+  DB.grades.push(g);
+  document.getElementById('progStudent').value = studentId;
+  closeModal('gradeModal');
+  renderProgress();
+  fsSet('grades', g);
+  toast('Assessment saved');
+}
+
+function deleteGrade(id) {
+  if (!confirm('Delete this assessment?')) return;
+  DB.grades = DB.grades.filter(g => g.id !== id);
+  renderProgress();
+  fsDel('grades', id);
+  toast('Assessment deleted');
+}
+
+// ════════════════════════════════════════
+// INVOICES
+// ════════════════════════════════════════
+function renderInvoiceList() {
+  fillMonthSelects();
+  const tbody = document.getElementById('invoiceBody');
+  const invs  = [...DB.invoices].sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
+  if (!invs.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No invoices yet — select a student and month above, then click Generate Invoice</td></tr>';
+    return;
+  }
+  const statusColors = { draft:'badge-gray', sent:'badge-blue', paid:'badge-green' };
+  tbody.innerHTML = invs.map(inv => `
+    <tr>
+      <td><strong>#${inv.num || inv.id.slice(-6).toUpperCase()}</strong></td>
+      <td>${studentName(inv.studentId)}</td>
+      <td>${monthLabel(inv.month)}</td>
+      <td>${(inv.sessions || []).length}</td>
+      <td><strong>${cur()} ${(+inv.total || 0).toFixed(2)}</strong></td>
+      <td>
+        <select style="border:2px solid #E2E8F0;border-radius:7px;padding:4px 8px;font-size:.8rem;font-weight:600;background:#fff"
+          onchange="updateInvoiceStatus('${inv.id}', this.value)">
+          <option value="draft" ${inv.status==='draft'?'selected':''}>Draft</option>
+          <option value="sent"  ${inv.status==='sent' ?'selected':''}>Sent</option>
+          <option value="paid"  ${inv.status==='paid' ?'selected':''}>Paid ✓</option>
+        </select>
+      </td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-primary" onclick="viewInvoice('${inv.id}')">🖨️ View</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')" style="margin-left:4px">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+
+function generateInvoice() {
+  const studentId = document.getElementById('invStudent').value;
+  const month     = document.getElementById('invMonth').value;
+  if (!studentId) { toast('Please select a student'); return; }
+  if (!month)     { toast('Please select a billing period'); return; }
+
+  const st   = DB.students.find(s => s.id === studentId);
+  const rate = +(st && st.rate ? st.rate : DB.settings.rate) || 350;
+
+  const sessions = DB.sessions
+    .filter(s => s.studentId === studentId && s.date && s.date.startsWith(month) && s.att !== 'absent')
+    .sort((a, b) => a.date > b.date ? 1 : -1);
+
+  const total  = sessions.reduce((a, s) => a + calcH(s.start, s.end) * rate, 0);
+  const invNum = String(DB.invoices.length + 1).padStart(4, '0');
+
+  const inv = {
+    id:         uid(),
+    num:        invNum,
+    studentId, month, rate, sessions, total,
+    status:     'draft',
+    createdAt:  new Date().toISOString(),
+    tutorName:  DB.settings.name   || '',
+    bizName:    DB.settings.biz    || '',
+    tutorEmail: DB.settings.email  || '',
+    tutorPhone: DB.settings.phone  || '',
+    bank:       DB.settings.bank   || '',
+    accNo:      DB.settings.accNo  || '',
+    accBr:      DB.settings.accBr  || '',
+    accType:    DB.settings.accType || '',
+    footer:     DB.settings.footer || '',
+    cur:        cur(),
+  };
+  DB.invoices.push(inv);
+  fsSet('invoices', inv);
+  toast(`Invoice #${invNum} generated — ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`);
+  renderInvoiceList();
+  viewInvoice(inv.id);
+}
+
+function updateInvoiceStatus(id, status) {
+  DB.invoices = DB.invoices.map(inv => inv.id === id ? { ...inv, status } : inv);
+  const inv = DB.invoices.find(i => i.id === id);
+  if (inv) fsSet('invoices', inv);
+}
+
+function deleteInvoice(id) {
+  if (!confirm('Delete this invoice?')) return;
+  DB.invoices = DB.invoices.filter(i => i.id !== id);
+  renderInvoiceList();
+  fsDel('invoices', id);
+  toast('Invoice deleted');
+}
+
+function viewInvoice(id) {
+  const inv = DB.invoices.find(i => i.id === id);
+  if (!inv) return;
+  const st  = DB.students.find(s => s.id === inv.studentId);
+  const c   = inv.cur || cur();
+  const r   = +inv.rate || +DB.settings.rate || 350;
+
+  const rows = (inv.sessions || []).map(s => {
+    const h   = calcH(s.start, s.end);
+    const amt = h * r;
+    return `<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;white-space:nowrap">${fmtDate(s.date)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;white-space:nowrap">${fmtTime(s.start)} – ${fmtTime(s.end)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center">${h.toFixed(2)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:right">${c} ${r.toFixed(2)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:right;font-weight:700">${c} ${amt.toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+
+  const biz   = inv.bizName   || DB.settings.biz   || '';
+  const tName = inv.tutorName || DB.settings.name   || '';
+  const tEmail= inv.tutorEmail|| DB.settings.email  || '';
+  const tPhone= inv.tutorPhone|| DB.settings.phone  || '';
+  const bank  = inv.bank      || DB.settings.bank   || '';
+  const accNo = inv.accNo     || DB.settings.accNo  || '';
+  const accBr = inv.accBr     || DB.settings.accBr  || '';
+  const accTy = inv.accType   || DB.settings.accType|| '';
+  const footer= inv.footer    || DB.settings.footer || 'Please make payment within 7 days. Thank you!';
+
+  document.getElementById('invoicePrintArea').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;padding-bottom:22px;border-bottom:3px solid #6366F1">
+      <div>
+        <div style="font-size:2rem;font-weight:900;color:#6366F1;letter-spacing:-.02em">INVOICE</div>
+        <div style="font-size:.92rem;color:#64748B;margin-top:4px">Invoice #${inv.num || inv.id.slice(-6).toUpperCase()}</div>
+        <div style="font-size:.85rem;color:#94A3B8;margin-top:2px">Period: ${monthLabel(inv.month)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.15rem;font-weight:800;color:#1E293B">${biz || tName || 'MathTutor Pro'}</div>
+        ${biz && tName ? `<div style="font-size:.88rem;color:#475569">${tName}</div>` : ''}
+        ${tEmail ? `<div style="font-size:.85rem;color:#64748B">${tEmail}</div>` : ''}
+        ${tPhone ? `<div style="font-size:.85rem;color:#64748B">${tPhone}</div>` : ''}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px">
+      <div>
+        <div style="font-size:.72rem;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Bill To</div>
+        <div style="font-weight:800;font-size:1rem;color:#1E293B">${st ? (st.parent || st.first + ' ' + st.last) : studentName(inv.studentId)}</div>
+        ${st && st.rel  ? `<div style="font-size:.85rem;color:#64748B">${st.rel} of ${st.first} ${st.last}</div>` : ''}
+        ${st && st.pEmail ? `<div style="font-size:.85rem;color:#64748B">${st.pEmail}</div>` : ''}
+        ${st && st.pPhone ? `<div style="font-size:.85rem;color:#64748B">${st.pPhone}</div>` : ''}
+        ${st && st.addr   ? `<div style="font-size:.83rem;color:#64748B;white-space:pre-line;margin-top:5px">${st.addr}</div>` : ''}
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:.72rem;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Invoice Info</div>
+        <div style="font-size:.88rem;color:#475569">Date issued: <strong>${new Date(inv.createdAt).toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'})}</strong></div>
+        <div style="font-size:.88rem;color:#475569;margin-top:4px">Status: <strong style="color:${inv.status==='paid'?'#10B981':inv.status==='sent'?'#6366F1':'#94A3B8'}">${inv.status.toUpperCase()}</strong></div>
+      </div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:0">
+      <thead>
+        <tr style="background:#F8FAFC">
+          <th style="padding:10px 12px;text-align:left;font-size:.78rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;text-transform:uppercase;letter-spacing:.04em">Date</th>
+          <th style="padding:10px 12px;text-align:left;font-size:.78rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;text-transform:uppercase;letter-spacing:.04em">Time</th>
+          <th style="padding:10px 12px;text-align:center;font-size:.78rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;text-transform:uppercase;letter-spacing:.04em">Hours</th>
+          <th style="padding:10px 12px;text-align:right;font-size:.78rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;text-transform:uppercase;letter-spacing:.04em">Rate/hr</th>
+          <th style="padding:10px 12px;text-align:right;font-size:.78rem;font-weight:700;color:#64748B;border-bottom:2px solid #E2E8F0;text-transform:uppercase;letter-spacing:.04em">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows || '<tr><td colspan="5" style="text-align:center;padding:24px;color:#94A3B8;font-size:.9rem">No attended sessions recorded for this period</td></tr>'}
+      </tbody>
+      <tfoot>
+        <tr style="background:#EEF2FF">
+          <td colspan="4" style="padding:14px 12px;text-align:right;font-weight:800;font-size:1rem;color:#1E293B;border-top:2px solid #6366F1">TOTAL DUE</td>
+          <td style="padding:14px 12px;text-align:right;font-weight:900;font-size:1.25rem;color:#6366F1;border-top:2px solid #6366F1">${c} ${(+inv.total||0).toFixed(2)}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    ${bank ? `
+    <div style="background:#F8FAFC;border-radius:10px;padding:16px 18px;margin-top:22px">
+      <div style="font-size:.72rem;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Banking Details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:.87rem">
+        ${bank  ? `<div><span style="color:#94A3B8">Bank:</span> <strong>${bank}</strong></div>` : ''}
+        ${accNo ? `<div><span style="color:#94A3B8">Account #:</span> <strong>${accNo}</strong></div>` : ''}
+        ${accBr ? `<div><span style="color:#94A3B8">Branch Code:</span> <strong>${accBr}</strong></div>` : ''}
+        ${accTy ? `<div><span style="color:#94A3B8">Account Type:</span> <strong>${accTy}</strong></div>` : ''}
+      </div>
+    </div>` : ''}
+
+    <div style="margin-top:22px;padding-top:16px;border-top:1px solid #E2E8F0;font-size:.85rem;color:#64748B;font-style:italic">
+      ${footer}
+    </div>
+  `;
+
+  document.getElementById('invoiceListWrap').style.display    = 'none';
+  document.getElementById('invoicePreviewWrap').style.display = 'block';
+}
+
+function closeInvoicePreview() {
+  document.getElementById('invoiceListWrap').style.display    = 'block';
+  document.getElementById('invoicePreviewWrap').style.display = 'none';
+}
+
+// ════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════
+function loadSettingsForm() {
+  const s = DB.settings;
+  const fields = {
+    setName:    s.name    || '',
+    setBiz:     s.biz     || '',
+    setEmail:   s.email   || '',
+    setPhone:   s.phone   || '',
+    setRate:    s.rate    || 350,
+    setCur:     s.cur     || 'R',
+    setBank:    s.bank    || '',
+    setAccNo:   s.accNo   || '',
+    setAccBr:   s.accBr   || '',
+    setAccType: s.accType || '',
+    setFooter:  s.footer  || 'Please make payment within 7 days. Thank you!',
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+}
+
+function saveSettings() {
+  const s = {
+    name:    document.getElementById('setName').value.trim(),
+    biz:     document.getElementById('setBiz').value.trim(),
+    email:   document.getElementById('setEmail').value.trim(),
+    phone:   document.getElementById('setPhone').value.trim(),
+    rate:    +document.getElementById('setRate').value  || 350,
+    cur:     document.getElementById('setCur').value.trim() || 'R',
+    bank:    document.getElementById('setBank').value.trim(),
+    accNo:   document.getElementById('setAccNo').value.trim(),
+    accBr:   document.getElementById('setAccBr').value.trim(),
+    accType: document.getElementById('setAccType').value.trim(),
+    footer:  document.getElementById('setFooter').value.trim(),
+  };
+  DB.settings = { ...DB.settings, ...s };
+  document.getElementById('brandSub').textContent = s.biz || s.name || 'Your Tutoring Hub';
+  fsSaveSettings(DB.settings);
+  toast('Settings saved to cloud ✓');
+}
+</script>
+</body>
+</html>
