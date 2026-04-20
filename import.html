@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathTutor Pro – Data Import</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:580px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  h1{font-size:1.5rem;font-weight:800;color:#1E293B;margin-bottom:6px}
+  .sub{color:#64748B;font-size:.9rem;margin-bottom:28px}
+  .data-preview{background:#F8FAFC;border-radius:12px;padding:16px;margin-bottom:24px;border:1px solid #E2E8F0}
+  .data-preview h3{font-size:.85rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+  .stu-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F1F5F9}
+  .stu-row:last-child{border-bottom:none}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .stu-name{font-weight:600;font-size:.9rem;flex:1}
+  .stu-meta{font-size:.8rem;color:#64748B}
+  .counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+  .count-box{background:#F8FAFC;border-radius:10px;padding:14px;text-align:center;border:1px solid #E2E8F0}
+  .count-val{font-size:1.8rem;font-weight:800;color:#6366F1}
+  .count-lbl{font-size:.78rem;color:#64748B;margin-top:2px}
+  .warn{background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;padding:14px;font-size:.85rem;color:#92400E;margin-bottom:20px}
+  .warn strong{display:block;margin-bottom:4px}
+  .btn{width:100%;padding:15px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s}
+  .btn-import{background:#6366F1;color:#fff}
+  .btn-import:hover{background:#4F46E5;transform:translateY(-1px)}
+  .btn-import:disabled{background:#A5B4FC;cursor:not-allowed;transform:none}
+  .progress{display:none;margin-top:20px}
+  .prog-bar-wrap{background:#E2E8F0;border-radius:20px;height:10px;overflow:hidden;margin:10px 0}
+  .prog-bar{background:#6366F1;height:100%;border-radius:20px;transition:width .3s;width:0%}
+  .log{background:#0F172A;border-radius:10px;padding:14px;margin-top:12px;font-family:monospace;font-size:.8rem;color:#94A3B8;max-height:180px;overflow-y:auto;line-height:1.8}
+  .log .ok{color:#34D399}
+  .log .err{color:#F87171}
+  .done-box{display:none;background:#ECFDF5;border:1px solid #6EE7B7;border-radius:12px;padding:20px;text-align:center;margin-top:20px}
+  .done-box h2{color:#065F46;font-size:1.2rem;margin-bottom:8px}
+  .done-box p{color:#047857;font-size:.9rem;margin-bottom:14px}
+  .btn-go{display:inline-block;background:#6366F1;color:#fff;padding:11px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:.9rem}
+  .error-box{display:none;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:12px;padding:16px;margin-top:16px;color:#991B1B;font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📥 Import Your Tutoring Data</h1>
+  <p class="sub">This will load all your existing students, sessions and grades into MathTutor Pro. It only runs once.</p>
+
+  <div class="counts">
+    <div class="count-box"><div class="count-val">5</div><div class="count-lbl">Students</div></div>
+    <div class="count-box"><div class="count-val">12</div><div class="count-lbl">Sessions</div></div>
+    <div class="count-box"><div class="count-val">4</div><div class="count-lbl">Grades</div></div>
+  </div>
+
+  <div class="data-preview">
+    <h3>Students to import</h3>
+    <div class="stu-row"><div class="dot" style="background:#6366F1"></div><div class="stu-name">Eunique De Villiers (Nicki)</div><div class="stu-meta">Gr 10 · Maths · R200/hr</div></div>
+    <div class="stu-row"><div class="dot" style="background:#EC4899"></div><div class="stu-name">Eunique De Villiers (IGO)</div><div class="stu-meta">Gr 10 · IGO · R100/hr</div></div>
+    <div class="stu-row"><div class="dot" style="background:#F59E0B"></div><div class="stu-name">La-Chené Janse van Rensberg</div><div class="stu-meta">Gr 8 · Maths · R200/hr</div></div>
+    <div class="stu-row"><div class="dot" style="background:#10B981"></div><div class="stu-name">Miane Alberts</div><div class="stu-meta">Gr 8 · Maths · R100/hr</div></div>
+    <div class="stu-row"><div class="dot" style="background:#3B82F6"></div><div class="stu-name">Judah Botha</div><div class="stu-meta">Gr 8 · Maths · R200/hr</div></div>
+  </div>
+
+  <div class="warn">
+    <strong>⚠️ Only click Import once.</strong>
+    If your app already has data in it, clicking import again will add duplicates. This is a one-time action.
+  </div>
+
+  <button class="btn btn-import" id="importBtn" onclick="startImport()">
+    🚀 Import All Data to Firebase
+  </button>
+
+  <div class="progress" id="progress">
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#64748B;margin-bottom:4px">
+      <span id="progLabel">Importing...</span>
+      <span id="progPct">0%</span>
+    </div>
+    <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <div class="done-box" id="doneBox">
+    <h2>✅ Import Complete!</h2>
+    <p>All your students, sessions and grades are now in MathTutor Pro.</p>
+    <a href="https://enricoalberts992-ux.github.io/math-tutor-app/" class="btn-go">Open My App →</a>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<script>
+// ── All your existing data ─────────────────────────────────
+const STUDENTS = [
+  { id:'s1', name:'Eunique De Villiers', grade:'Grade 10', subjects:'Maths',
+    rate:200, color:'#6366F1', status:'active', notes:'Nicki doen Wisk',
+    parentName:'Monique/Eugene', parentEmail:'', parentPhone:'076 806 6187',
+    address:'', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'s2', name:'Eunique De Villiers (IGO)', grade:'Grade 10', subjects:'IGO',
+    rate:100, color:'#EC4899', status:'active', notes:'Nicki doen IGO',
+    parentName:'Monique/Eugene', parentEmail:'', parentPhone:'076 806 6187',
+    address:'', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'s3', name:'La-Chené Janse van Rensberg', grade:'Grade 8', subjects:'Maths',
+    rate:200, color:'#F59E0B', status:'active', notes:'',
+    parentName:'Cindy/Morne', parentEmail:'', parentPhone:'082 609 8550',
+    address:'', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'s4', name:'Miane Alberts', grade:'Grade 8', subjects:'Maths',
+    rate:100, color:'#10B981', status:'active', notes:'',
+    parentName:'Elaine/Gerdouw', parentEmail:'', parentPhone:'082 847 8601',
+    address:'', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'s5', name:'Judah Botha', grade:'Grade 8', subjects:'Maths',
+    rate:200, color:'#3B82F6', status:'active', notes:'',
+    parentName:'Natali Botha', parentEmail:'', parentPhone:'072 289 4245',
+    address:'', createdAt:'2026-04-18T16:58:29.000Z' }
+];
+
+const SESSIONS = [
+  { id:'ses1', studentId:'s1', date:'2026-02-28', startTime:'10:00', endTime:'11:30',
+    topics:'Eerste les - bepaal huidige vlak', good:'Algebra', bad:'Magte, k-somme',
+    next:'Toets voorbereiding', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses2', studentId:'s1', date:'2026-04-03', startTime:'18:00', endTime:'20:00',
+    topics:'Toets voorbereiding - Mags Wette', good:'', bad:'',
+    next:'Toets voorbereiding - Mags Wette', hw:'', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses3', studentId:'s1', date:'2026-03-13', startTime:'18:00', endTime:'19:00',
+    topics:'Ongelykhede', good:'Overall Ongelykhede', bad:'geen',
+    next:'geen', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses4', studentId:'s2', date:'2026-03-17', startTime:'14:30', endTime:'15:30',
+    topics:'Vyf, ses en agthoeke. En Elips', good:'Vyf, ses, agthoeke', bad:'Elips',
+    next:'Elips leer', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses5', studentId:'s1', date:'2026-03-21', startTime:'10:00', endTime:'11:00',
+    topics:'Eksponente en wette', good:'Overall at medium', bad:'Moet net meer oefen',
+    next:'', hw:'Eksponent en indekswette hw', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses6', studentId:'s3', date:'2026-03-23', startTime:'13:00', endTime:'14:00',
+    topics:'Eerste les - bepaal huidige vlak', good:'Basics: getalle',
+    bad:'Verhoudings, persentasies, finansies, x-algebra',
+    next:'Algemene Reel', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses7', studentId:'s1', date:'2026-03-27', startTime:'17:00', endTime:'18:00',
+    topics:'Hakkies Uitgebrei', good:'Overall hakkies',
+    bad:'3x3 sal as 6 wees inplaas 9, klein foute',
+    next:'Algebraiese breuke', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses8', studentId:'s1', date:'2026-04-04', startTime:'18:00', endTime:'19:00',
+    topics:'Algebraiese breuke', good:'', bad:'',
+    next:'Algebraiese breuke', hw:'', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses9', studentId:'s3', date:'2026-04-13', startTime:'15:00', endTime:'16:00',
+    topics:'Verhoudings, persentasie, finansies en koerse',
+    good:'Verhoudings en persentasie', bad:'Finansies en koerse',
+    next:'Algemene Reel', hw:'Hw vir hele topic/les', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses10', studentId:'s4', date:'2026-04-15', startTime:'16:00', endTime:'17:00',
+    topics:'Eerste les - bepaal huidige vlak', good:'Letterlik alles',
+    bad:'Basically niks', next:'Eksponent wette', hw:'Geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses11', studentId:'s1', date:'2026-04-17', startTime:'17:00', endTime:'18:00',
+    topics:'Vergelykings en ongelykhede (pt1)', good:'Overall vgl en ongelykhede (pt1)',
+    bad:'Gelyktydige vgl', next:'Gelyktydige vgl en (PT2)', hw:'geen', att:'present', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'ses12', studentId:'s5', date:'2026-04-18', startTime:'09:00', endTime:'10:00',
+    topics:'Eerste les - bepaal huidige vlak', good:'', bad:'',
+    next:'Eerste les - bepaal huidige vlak', hw:'', att:'absent', createdAt:'2026-04-18T16:58:29.000Z' }
+];
+
+const GRADES = [
+  { id:'g1', studentId:'s1', date:'2026-01-01', name:'Ondersoek',
+    type:'Assessment', score:78, max:100, notes:'Getalpatronne', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'g2', studentId:'s1', date:'2026-03-06', name:'Kwartaal 1 Toets',
+    type:'Test', score:14, max:100, notes:'Algebra', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'g3', studentId:'s3', date:'2026-02-10', name:'Kwartaal 1 Toets',
+    type:'Test', score:50, max:100, notes:'Algebra', createdAt:'2026-04-18T16:58:29.000Z' },
+  { id:'g4', studentId:'s4', date:'2026-04-16', name:'Kwartaal 1 Rapport Punt',
+    type:'Exam', score:80, max:100, notes:'Rapport', createdAt:'2026-04-18T16:58:29.000Z' }
+];
+
+const SETTINGS = {
+  name:'', biz:'', email:'', phone:'',
+  rate:200, cur:'R', bank:'', footer:'Please make payment within 7 days. Thank you!'
+};
+
+// ── Firebase ───────────────────────────────────────────────
+let db, uid;
+const TOTAL = STUDENTS.length + SESSIONS.length + GRADES.length + 1;
+let done = 0;
+
+function log(msg, ok = true) {
+  const el = document.getElementById('log');
+  el.innerHTML += `<div class="${ok?'ok':'err'}">${ok?'✓':'✗'} ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(n) {
+  const pct = Math.round((n / TOTAL) * 100);
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+}
+
+async function startImport() {
+  const btn = document.getElementById('importBtn');
+  btn.disabled = true;
+  btn.textContent = 'Importing...';
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('errorBox').style.display = 'none';
+
+  // Get Firebase config from localStorage
+  const saved = localStorage.getItem('mtp_fb_cfg');
+  if (!saved) {
+    showError('No Firebase config found. Please open your main app first and connect to Firebase, then come back here.');
+    btn.disabled = false; btn.textContent = '🚀 Import All Data to Firebase';
+    return;
+  }
+
+  let cfg;
+  try { cfg = JSON.parse(saved); } catch(e) {
+    showError('Could not read Firebase config. Please reconnect in the main app.');
+    btn.disabled = false; btn.textContent = '🚀 Import All Data to Firebase';
+    return;
+  }
+
+  // Init Firebase
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(cfg);
+  } catch(e) { /* already init */ }
+
+  // Sign in check
+  document.getElementById('progLabel').textContent = 'Signing in...';
+  const auth = firebase.auth();
+  const user = auth.currentUser;
+
+  if (!user) {
+    // Need to sign in
+    document.getElementById('progLabel').textContent = 'Please sign in with Google...';
+    try {
+      const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      uid = result.user.uid;
+    } catch(e) {
+      showError('Sign-in failed: ' + e.message);
+      btn.disabled = false; btn.textContent = '🚀 Import All Data to Firebase';
+      return;
+    }
+  } else {
+    uid = user.uid;
+  }
+
+  db = firebase.firestore();
+  const base = db.collection('tutors').doc(uid);
+
+  try {
+    // Import students
+    document.getElementById('progLabel').textContent = 'Importing students...';
+    for (const s of STUDENTS) {
+      await base.collection('students').doc(s.id).set(s);
+      done++; setProgress(done); log(`Student: ${s.name}`);
+    }
+
+    // Import sessions
+    document.getElementById('progLabel').textContent = 'Importing sessions...';
+    for (const s of SESSIONS) {
+      await base.collection('sessions').doc(s.id).set(s);
+      done++; setProgress(done); log(`Session: ${s.date} – ${STUDENTS.find(x=>x.id===s.studentId)?.name||s.studentId}`);
+    }
+
+    // Import grades
+    document.getElementById('progLabel').textContent = 'Importing grades...';
+    for (const g of GRADES) {
+      await base.collection('grades').doc(g.id).set(g);
+      done++; setProgress(done); log(`Grade: ${g.name} – ${STUDENTS.find(x=>x.id===g.studentId)?.name||g.studentId} (${g.score}/${g.max})`);
+    }
+
+    // Import settings
+    document.getElementById('progLabel').textContent = 'Saving settings...';
+    await base.collection('meta').doc('settings').set(SETTINGS);
+    done++; setProgress(done); log('Settings saved');
+
+    // Done!
+    document.getElementById('progLabel').textContent = 'Complete!';
+    document.getElementById('doneBox').style.display = 'block';
+
+  } catch(e) {
+    showError('Import failed: ' + e.message + '. Check your Firestore rules allow writes.');
+    log(e.message, false);
+    btn.disabled = false;
+    btn.textContent = '🔄 Retry Import';
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = '❌ ' + msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
