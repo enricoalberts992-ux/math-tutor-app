@@ -930,7 +930,14 @@ function monthLabel(ym)   {
 function todayStr()       { return new Date().toISOString().slice(0, 10); }
 function studentName(id)  {
   const s = DB.students.find(s => s.id === id);
-  return s ? `${s.first} ${s.last}` : '—';
+  if (!s) return '—';
+  if (s.name) return s.name;
+  return `${s.first || ''} ${s.last || ''}`.trim() || '—';
+}
+function stuFullName(s) {
+  if (!s) return '—';
+  if (s.name) return s.name;
+  return `${s.first || ''} ${s.last || ''}`.trim() || '—';
 }
 function attBadge(a) {
   const map = { absent:'badge-red', late:'badge-yellow', present:'badge-green' };
@@ -965,7 +972,7 @@ function fillStudentSelects() {
     el.innerHTML = `<option value="">${placeholder}</option>`;
     const list = activeOnly ? DB.students.filter(s => s.status !== 'inactive') : DB.students;
     list.forEach(s => {
-      el.innerHTML += `<option value="${s.id}">${s.first} ${s.last}</option>`;
+      el.innerHTML += `<option value="${s.id}">${stuFullName(s)}</option>`;
     });
     if (prev) el.value = prev;
   });
@@ -1064,7 +1071,7 @@ function renderDash() {
   tbody.innerHTML = DB.students.map(s => {
     const count = DB.sessions.filter(x => x.studentId === s.id).length;
     return `<tr>
-      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${s.first} ${s.last}</strong></td>
+      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${stuFullName(s)}</strong></td>
       <td>${s.grade || '—'}</td>
       <td>${(s.subjects || '').split(',').filter(Boolean).slice(0,3).map(x => `<span class="chip">${x.trim()}</span>`).join('')}</td>
       <td>${count}</td>
@@ -1098,7 +1105,7 @@ function renderStudents() {
   const statusColors = { active:'badge-green', inactive:'badge-gray', trial:'badge-blue' };
   tbody.innerHTML = DB.students.map(s => `
     <tr>
-      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${s.first} ${s.last}</strong></td>
+      <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${stuFullName(s)}</strong></td>
       <td>${s.grade || '—'}</td>
       <td>${(s.subjects || '').split(',').filter(Boolean).slice(0,3).map(x => `<span class="chip">${x.trim()}</span>`).join('') || '—'}</td>
       <td>${cur()} ${+s.rate || +DB.settings.rate || 350}/hr</td>
@@ -1115,8 +1122,8 @@ function openStudentModal(id) {
   document.getElementById('studentModalTitle').textContent = id ? 'Edit Student' : 'Add Student';
   const s = (id && DB.students.find(x => x.id === id)) || {};
   const fields = {
-    sfFirst:  s.first    || '',
-    sfLast:   s.last     || '',
+    sfFirst:  s.first || (s.name ? s.name.split(' ')[0] : '') || '',
+    sfLast:   s.last  || (s.name ? s.name.split(' ').slice(1).join(' ') : '') || '',
     sfGrade:  s.grade    || '',
     sfRate:   s.rate     || '',
     sfSubs:   s.subjects || '',
@@ -1615,8 +1622,8 @@ function viewInvoice(id) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px">
       <div>
         <div style="font-size:.72rem;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Bill To</div>
-        <div style="font-weight:800;font-size:1rem;color:#1E293B">${st ? (st.parent || st.first + ' ' + st.last) : studentName(inv.studentId)}</div>
-        ${st && st.rel  ? `<div style="font-size:.85rem;color:#64748B">${st.rel} of ${st.first} ${st.last}</div>` : ''}
+        <div style="font-weight:800;font-size:1rem;color:#1E293B">${st ? (st.parent || stuFullName(st)) : studentName(inv.studentId)}</div>
+        ${st && st.rel  ? `<div style="font-size:.85rem;color:#64748B">${st.rel} of ${stuFullName(st)}</div>` : ''}
         ${st && st.pEmail ? `<div style="font-size:.85rem;color:#64748B">${st.pEmail}</div>` : ''}
         ${st && st.pPhone ? `<div style="font-size:.85rem;color:#64748B">${st.pPhone}</div>` : ''}
         ${st && st.addr   ? `<div style="font-size:.83rem;color:#64748B;white-space:pre-line;margin-top:5px">${st.addr}</div>` : ''}
