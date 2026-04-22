@@ -346,7 +346,7 @@ service cloud.firestore {
       <div class="section-hd"><h2>👩‍🎓 Student Snapshot</h2></div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Name</th><th>Grade</th><th>Subjects</th><th>Sessions</th><th>Status</th></tr></thead>
+          <thead><tr><th>Name</th><th>Grade</th><th>Subjects</th><th>Sessions</th><th>Avg Conf</th><th>Avg Mark</th><th>Focus</th><th>Status</th></tr></thead>
           <tbody id="snapBody"></tbody>
         </table>
       </div>
@@ -388,7 +388,7 @@ service cloud.firestore {
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Hrs</th><th>Topics</th><th>Attendance</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Hrs</th><th>Topics</th><th>Attendance</th><th>Confidence</th><th>Actions</th></tr></thead>
           <tbody id="sessionBody"></tbody>
         </table>
       </div>
@@ -568,6 +568,14 @@ service cloud.firestore {
         </div>
         <div class="form-row"><label>Homework Set</label>
           <input id="sesHw" placeholder="e.g. Exercises 5.1 – 5.3">
+        </div>
+        <div class="form-row">
+          <label>🎯 Student Confidence (1–10)</label>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+            <input id="sesConf" type="range" min="1" max="10" value="7" style="flex:1;accent-color:#6366F1" oninput="document.getElementById('sesConfVal').textContent=this.value">
+            <span id="sesConfVal" style="font-size:1.3rem;font-weight:800;color:#6366F1;min-width:28px;text-align:center">7</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#94A3B8;margin-top:2px"><span>Not confident</span><span>Very confident</span></div>
         </div>
       </div>
       <div id="sesTab1" class="tab-panel">
@@ -1014,11 +1022,27 @@ function renderDash() {
     return a + calcH(s.start, s.end) * rate;
   }, 0);
 
+  // YTD calculations
+  const ytdSessions = DB.sessions.filter(s => s.date && s.date.startsWith(now.getFullYear()+'') && s.att !== 'absent');
+  const ytdRev      = ytdSessions.reduce((a,s) => {
+    const st = DB.students.find(x => x.id === s.studentId);
+    return a + calcH(s.start,s.end) * (+(st&&st.rate)||+DB.settings.rate||350);
+  }, 0);
+  const allAttSess  = DB.sessions.filter(s => s.att !== 'absent');
+  const confSess    = allAttSess.filter(s => s.conf);
+  const avgConf     = confSess.length ? confSess.reduce((a,s)=>a+s.conf,0)/confSess.length : null;
+  const avgMark     = DB.grades.length ? DB.grades.reduce((a,g)=>a+(g.score/g.total*100),0)/DB.grades.length : null;
+  const confColor   = avgConf===null?'#6366F1':avgConf>=8?'#10B981':avgConf>=6?'#F59E0B':'#EF4444';
+  const markColor   = avgMark===null?'#6366F1':avgMark>=75?'#10B981':avgMark>=50?'#F59E0B':'#EF4444';
+
   document.getElementById('dashStats').innerHTML = `
     <div class="stat-card"><div class="stat-val">${activeStudents}</div><div class="stat-label">Active Students</div></div>
     <div class="stat-card"><div class="stat-val">${monthSessions.length}</div><div class="stat-label">Sessions This Month</div></div>
-    <div class="stat-card"><div class="stat-val">${monthHours.toFixed(1)}</div><div class="stat-label">Hours This Month</div></div>
+    <div class="stat-card"><div class="stat-val">${monthHours.toFixed(1)}h</div><div class="stat-label">Hours This Month</div></div>
     <div class="stat-card"><div class="stat-val">${cur()} ${monthRev.toFixed(0)}</div><div class="stat-label">Revenue This Month</div></div>
+    <div class="stat-card"><div class="stat-val">${cur()} ${ytdRev.toFixed(0)}</div><div class="stat-label">YTD Revenue</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:${confColor}">${avgConf!==null?avgConf.toFixed(1)+'/10':'—'}</div><div class="stat-label">Avg Confidence</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:${markColor}">${avgMark!==null?avgMark.toFixed(1)+'%':'—'}</div><div class="stat-label">Avg Mark (All Students)</div></div>
   `;
 
   // Today's schedule
@@ -1069,12 +1093,30 @@ function renderDash() {
   }
   const statusColors = { active:'badge-green', inactive:'badge-gray', trial:'badge-blue' };
   tbody.innerHTML = DB.students.map(s => {
-    const count = DB.sessions.filter(x => x.studentId === s.id).length;
+    const stuSess   = DB.sessions.filter(x => x.studentId === s.id && x.att !== 'absent');
+    const stuGrades = DB.grades.filter(g => g.studentId === s.id);
+    const confSess  = stuSess.filter(x => x.conf);
+    const avgC      = confSess.length ? confSess.reduce((a,x)=>a+x.conf,0)/confSess.length : null;
+    const avgM      = stuGrades.length ? stuGrades.reduce((a,g)=>a+(g.score/g.total*100),0)/stuGrades.length : null;
+    const cCol      = avgC===null?'#94A3B8':avgC>=8?'#10B981':avgC>=6?'#F59E0B':'#EF4444';
+    const mCol      = avgM===null?'#94A3B8':avgM>=75?'#10B981':avgM>=50?'#F59E0B':'#EF4444';
+    // Focus flag logic
+    let focus, focusStyle;
+    if (!stuSess.length) {
+      focus='⚪ Not started'; focusStyle='color:#94A3B8;font-size:.8rem;font-weight:600';
+    } else if ((avgC!==null&&avgC<6)||(avgM!==null&&avgM<60)) {
+      focus='🔴 Needs attention'; focusStyle='color:#DC2626;font-size:.8rem;font-weight:700';
+    } else {
+      focus='🟢 On track'; focusStyle='color:#059669;font-size:.8rem;font-weight:600';
+    }
     return `<tr>
       <td><span class="color-dot" style="background:${s.color || '#6366F1'}"></span><strong>${stuFullName(s)}</strong></td>
       <td>${s.grade || '—'}</td>
       <td>${(s.subjects || '').split(',').filter(Boolean).slice(0,3).map(x => `<span class="chip">${x.trim()}</span>`).join('')}</td>
-      <td>${count}</td>
+      <td>${stuSess.length}</td>
+      <td style="font-weight:700;color:${cCol}">${avgC!==null?avgC.toFixed(1)+'/10':'—'}</td>
+      <td style="font-weight:700;color:${mCol}">${avgM!==null?avgM.toFixed(0)+'%':'—'}</td>
+      <td style="${focusStyle}">${focus}</td>
       <td><span class="badge ${statusColors[s.status] || 'badge-green'}">${s.status || 'active'}</span></td>
     </tr>`;
   }).join('');
@@ -1303,19 +1345,24 @@ function renderSessions() {
     tbody.innerHTML = '<tr><td colspan="7" class="empty">No sessions found for the selected filters</td></tr>';
     return;
   }
-  tbody.innerHTML = list.map(s => `
-    <tr>
+  tbody.innerHTML = list.map(s => {
+    const conf = s.conf;
+    const confColor = conf >= 8 ? '#10B981' : conf >= 6 ? '#F59E0B' : '#EF4444';
+    const confBg    = conf >= 8 ? '#ECFDF5' : conf >= 6 ? '#FFFBEB' : '#FEF2F2';
+    return `<tr>
       <td style="white-space:nowrap">${fmtDate(s.date)}</td>
       <td>${studentName(s.studentId)}</td>
       <td style="white-space:nowrap">${fmtTime(s.start)}–${fmtTime(s.end)}</td>
       <td>${calcH(s.start, s.end).toFixed(1)}h</td>
       <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.topic || ''}">${s.topic || '—'}</td>
       <td>${attBadge(s.att)}</td>
+      <td style="text-align:center">${conf ? `<span style="background:${confBg};color:${confColor};padding:3px 8px;border-radius:20px;font-weight:700;font-size:.82rem">${conf}/10</span>` : '—'}</td>
       <td style="white-space:nowrap">
         <button class="btn btn-sm btn-ghost" onclick="openSessionModal('${s.id}')">✏️</button>
         <button class="btn btn-sm btn-danger" onclick="deleteSession('${s.id}')" style="margin-left:4px">🗑️</button>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 function openSessionModal(id) {
@@ -1332,6 +1379,9 @@ function openSessionModal(id) {
   document.getElementById('sesWell').value    = s.well    || '';
   document.getElementById('sesWork').value    = s.work    || '';
   document.getElementById('sesPlan').value    = s.plan    || '';
+  const conf = s.conf || 7;
+  document.getElementById('sesConf').value    = conf;
+  document.getElementById('sesConfVal').textContent = conf;
   switchTab('ses', 0);
   openModal('sessionModal');
 }
@@ -1352,6 +1402,7 @@ function saveSession() {
     well:      document.getElementById('sesWell').value.trim(),
     work:      document.getElementById('sesWork').value.trim(),
     plan:      document.getElementById('sesPlan').value.trim(),
+    conf:      parseInt(document.getElementById('sesConf').value) || 7,
   };
   if (editingSessionId) {
     DB.sessions = DB.sessions.map(x => x.id === editingSessionId ? s : x);
@@ -1393,14 +1444,18 @@ function renderProgress() {
   const grades  = DB.grades.filter(g => g.studentId === studentId).sort((a,b) => b.date > a.date ? 1 : -1);
   const hours   = attSess.reduce((a, s) => a + calcH(s.start, s.end), 0);
   const avgPct  = grades.length ? grades.reduce((a, g) => a + g.score / g.total * 100, 0) / grades.length : null;
+  const confSess = allSess.filter(s => s.conf);
+  const avgConf  = confSess.length ? confSess.reduce((a, s) => a + (s.conf || 0), 0) / confSess.length : null;
 
   const statColor = avgPct === null ? '#6366F1' : avgPct >= 75 ? '#10B981' : avgPct >= 50 ? '#F59E0B' : '#EF4444';
+  const confColor = avgConf === null ? '#6366F1' : avgConf >= 8 ? '#10B981' : avgConf >= 6 ? '#F59E0B' : '#EF4444';
 
   wrap.innerHTML = `
     <div class="stat-grid" style="margin-bottom:20px">
       <div class="stat-card"><div class="stat-val">${allSess.length}</div><div class="stat-label">Total Sessions</div></div>
       <div class="stat-card"><div class="stat-val">${attSess.length}</div><div class="stat-label">Attended Sessions</div></div>
       <div class="stat-card"><div class="stat-val">${hours.toFixed(1)}</div><div class="stat-label">Hours Tutored</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:${confColor}">${avgConf !== null ? avgConf.toFixed(1) + '/10' : '—'}</div><div class="stat-label">Avg Confidence</div></div>
       <div class="stat-card"><div class="stat-val" style="color:${statColor}">${avgPct !== null ? avgPct.toFixed(1) + '%' : '—'}</div><div class="stat-label">Avg Assessment Score</div></div>
     </div>
 
@@ -1427,11 +1482,18 @@ function renderProgress() {
     </div>
 
     <div class="section-hd"><h2>📝 Session Notes (most recent first)</h2></div>
-    ${allSess.slice(0, 8).map(s => `
+    ${allSess.slice(0, 8).map(s => {
+      const cVal  = s.conf || null;
+      const cClr  = !cVal ? '#94A3B8' : cVal >= 8 ? '#10B981' : cVal >= 6 ? '#F59E0B' : '#EF4444';
+      const cStars = cVal ? '★'.repeat(Math.round(cVal/2)) + '☆'.repeat(5-Math.round(cVal/2)) : '';
+      return `
       <div class="note-item">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
           <strong style="font-size:.9rem">${fmtDate(s.date)}</strong>
-          ${attBadge(s.att)}
+          <div style="display:flex;align-items:center;gap:8px">
+            ${cVal ? `<span style="font-size:.82rem;color:${cClr};font-weight:700">💡 Confidence: ${cVal}/10 <span style="letter-spacing:1px">${cStars}</span></span>` : ''}
+            ${attBadge(s.att)}
+          </div>
         </div>
         ${s.topic ? `<p style="font-size:.84rem;color:#475569;margin-bottom:5px">📚 <strong>Topics:</strong> ${s.topic}</p>` : ''}
         ${s.well  ? `<p style="font-size:.84rem;color:#166534;margin-bottom:4px">✅ ${s.well}</p>` : ''}
@@ -1439,7 +1501,8 @@ function renderProgress() {
         ${s.plan  ? `<p style="font-size:.84rem;color:#1E40AF;margin-bottom:4px">📋 Next: ${s.plan}</p>` : ''}
         ${s.hw    ? `<p style="font-size:.84rem;color:#475569">📌 HW: ${s.hw}</p>` : ''}
         ${!s.topic && !s.well && !s.work && !s.plan && !s.hw ? '<p style="font-size:.83rem;color:#94A3B8">No notes recorded</p>' : ''}
-      </div>`).join('') || '<div class="empty">No sessions logged yet</div>'}
+      </div>`;
+    }).join('') || '<div class="empty">No sessions logged yet</div>'}
   `;
 }
 
