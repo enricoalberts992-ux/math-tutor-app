@@ -203,6 +203,81 @@ hr.div{border:none;border-top:1px solid #E2E8F0;margin:18px 0}
 .card-panel{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:18px}
 .plan-item{background:#fff;border-radius:10px;padding:13px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07);border-left:3px solid #6366F1}
 .note-item{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+
+/* ── Mobile hamburger + backdrop (hidden on desktop) ── */
+#hamBtn{display:none;position:fixed;top:10px;left:10px;z-index:60;width:42px;height:42px;border-radius:10px;background:#1E293B;color:#fff;border:none;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+#hamBtn:active{background:#0F172A}
+#sbBackdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:40}
+#sbBackdrop.open{display:block}
+
+/* ════════════════════════════════════════
+   MOBILE STYLES — under 768px
+   Desktop styles above are NOT modified.
+   ════════════════════════════════════════ */
+@media (max-width:768px){
+  /* Show hamburger only on mobile */
+  #hamBtn{display:flex;align-items:center;justify-content:center}
+
+  /* Sidebar becomes a slide-in drawer over content */
+  #scApp{flex-direction:column;display:block}
+  #sidebar{
+    position:fixed;top:0;left:0;height:100vh;width:260px;min-width:260px;
+    transform:translateX(-100%);transition:transform .25s ease;
+    z-index:50;box-shadow:4px 0 20px rgba(0,0,0,.25)
+  }
+  #sidebar.open{transform:translateX(0)}
+
+  /* Main content takes full width */
+  #main{width:100%;height:auto;min-height:100vh}
+  .page{padding:60px 14px 24px}      /* extra top padding so hamburger doesn't overlap content */
+  .page-title{font-size:1.25rem;margin-bottom:14px}
+
+  /* Stat grid: smaller min so 2-up fits a 390px screen */
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+  .stat-card{padding:14px}
+  .stat-val{font-size:1.5rem}
+  .stat-label{font-size:.76rem}
+
+  /* Side-by-side panels collapse to one column */
+  .form-grid{grid-template-columns:1fr}
+
+  /* Section headers wrap (title + button stack on tiny screens) */
+  .section-hd{flex-wrap:wrap;gap:8px}
+  .section-hd .btn{font-size:.82rem;padding:8px 12px}
+
+  /* Tables scroll horizontally inside their card */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl-wrap table{min-width:560px}
+  th,td{padding:9px 10px;font-size:.82rem}
+
+  /* Filters wrap and full-width on mobile */
+  .filter-row{gap:8px}
+  .filter-row select,.filter-row input,.filter-row .btn{flex:1 1 100%;min-width:0}
+
+  /* Modals fill the screen comfortably */
+  .overlay{padding:10px}
+  .modal{max-height:96vh;border-radius:14px}
+  .modal-hd{padding:14px 16px}
+  .modal-body{padding:14px 16px}
+  .modal-ft{padding:12px 16px;flex-wrap:wrap}
+  .modal-ft .btn{flex:1 1 auto}
+
+  /* Schedule grid already scrolls via .cal-outer overflow-x:auto — keep it */
+  .cal-grid{min-width:680px}
+
+  /* Invoice preview should fit */
+  .invoice-preview{padding:18px;border-radius:10px}
+  .invoice-preview table{font-size:.82rem}
+
+  /* Income overview: tiles stack 1-up on the smallest screens */
+  #incomeBody{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))!important;gap:8px!important;padding:14px!important}
+
+  /* Invoice summary row stacks */
+  #invoiceSummary{flex-direction:column;align-items:flex-start!important;gap:12px!important}
+
+  /* Toast position-tweak so it doesn't sit under the hamburger */
+  .toast{left:10px!important;right:10px!important;bottom:10px!important;width:auto!important}
+}
 </style>
 </head>
 <body>
@@ -312,6 +387,10 @@ service cloud.firestore {
      SCREEN 4: MAIN APP
 ═══════════════════════════════════ -->
 <div id="scApp" class="screen">
+
+  <!-- ── Mobile-only hamburger + backdrop ── -->
+  <button id="hamBtn" class="no-print" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+  <div id="sbBackdrop" class="no-print" onclick="closeSidebar()"></div>
 
   <!-- ── Sidebar ── -->
   <div id="sidebar">
@@ -971,6 +1050,22 @@ function nav(pageId) {
     pgSettings: loadSettingsForm
   };
   if (renders[pageId]) renders[pageId]();
+  closeSidebar();  // auto-close drawer on mobile after navigating
+}
+
+// ── Mobile sidebar drawer ──
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sbBackdrop');
+  if (!sb) return;
+  const isOpen = sb.classList.toggle('open');
+  if (bd) bd.classList.toggle('open', isOpen);
+}
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sbBackdrop');
+  if (sb) sb.classList.remove('open');
+  if (bd) bd.classList.remove('open');
 }
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
