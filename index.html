@@ -282,7 +282,7 @@ service cloud.firestore {
       Sign in with Google
     </button>
 
-    <button class="link-btn" onclick="resetSetup()">Change Firebase configuration</button>
+    <!-- Setup link removed — Firebase config is now hardcoded so the app works on any device -->
   </div>
 </div>
 
@@ -765,23 +765,31 @@ function fsSaveSettings(data) {
 // ════════════════════════════════════════
 // AUTH FLOW
 // ════════════════════════════════════════
+// Firebase config is hardcoded here so the app works on any device/browser
+// without needing setup. This is safe — Firebase config is meant to be public.
+// Real security comes from Firebase Auth + the ALLOWED_EMAIL check above
+// + the Firestore Security Rules locked to your specific UID.
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAHsgskizIKUWB1XmOg7sm2wrCnH_AnCNo",
+  authDomain: "mathtutorpro-292ad.firebaseapp.com",
+  projectId: "mathtutorpro-292ad",
+  storageBucket: "mathtutorpro-292ad.firebasestorage.app",
+  messagingSenderId: "965430429745",
+  appId: "1:965430429745:web:169267e057d4b8910fed10"
+};
+
 window.onload = function () {
   if (location.protocol === 'file:') {
     const w = document.getElementById('fileWarn');
     if (w) w.style.display = 'block';
   }
-  const saved = localStorage.getItem('mtp_fb_cfg');
-  if (saved) {
-    try {
-      const cfg = JSON.parse(saved);
-      if (initFirebase(cfg)) {
-        showSc('scLoad');
-        fbAuth.onAuthStateChanged(onAuth);
-        return;
-      }
-    } catch (e) { /* fall through to setup */ }
+  // Always use the hardcoded config — no localStorage, no setup screen.
+  if (initFirebase(FIREBASE_CONFIG)) {
+    showSc('scLoad');
+    fbAuth.onAuthStateChanged(onAuth);
+  } else {
+    showSc('scSetup');  // fallback only if init somehow fails
   }
-  showSc('scSetup');
 };
 
 async function onAuth(user) {
