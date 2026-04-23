@@ -691,6 +691,10 @@ service cloud.firestore {
 // ════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════
+// ── ACCESS CONTROL ──────────────────────
+// Only this email may use the app. Any other Google account is signed out.
+const ALLOWED_EMAIL = 'EnricoAlberts992@gmail.com';
+// ────────────────────────────────────────
 let fbAuth, fbDB, UID;
 let DB = {
   students:  [],
@@ -782,6 +786,24 @@ window.onload = function () {
 
 async function onAuth(user) {
   if (!user) { showSc('scLogin'); return; }
+
+  // ── ACCESS CONTROL: lock to a single Google account ──
+  const email = (user.email || '').toLowerCase();
+  if (email !== ALLOWED_EMAIL.toLowerCase()) {
+    const attempted = user.email || '(unknown)';
+    try { await firebase.auth().signOut(); } catch (e) { /* ignore */ }
+    UID = null;
+    DB = { students:[], sessions:[], schedules:[], grades:[], invoices:[],
+           settings:{ rate:350, cur:'R', footer:'Please make payment within 7 days. Thank you!' } };
+    showSc('scLogin');
+    setTimeout(() => {
+      alert('🚫 Access denied\n\nThis app is private. The Google account "' + attempted +
+            '" is not authorised to use it.\n\nYou have been signed out.');
+    }, 100);
+    return;
+  }
+  // ─────────────────────────────────────────────────────
+
   UID = user.uid;
   showSc('scLoad');
   try {
