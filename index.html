@@ -278,6 +278,79 @@ hr.div{border:none;border-top:1px solid #E2E8F0;margin:18px 0}
   /* Toast position-tweak so it doesn't sit under the hamburger */
   .toast{left:10px!important;right:10px!important;bottom:10px!important;width:auto!important}
 }
+
+/* ── Session log: tap-chips + topic tracker (BUILD 1, additive) ── */
+.tap-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tap-chip{border:2px solid #E2E8F0;background:#fff;border-radius:99px;padding:7px 13px;font-size:.82rem;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s;user-select:none;line-height:1}
+.tap-chip:hover{border-color:#CBD5E1;background:#F8FAFC}
+.tap-chip.sel{color:#fff;border-color:transparent}
+.tap-chip.sel:hover{background-clip:padding-box}
+.tap-chip.sel-plain{background:#6366F1}
+.tap-chip.sel-struggled{background:#EF4444}
+.tap-chip.sel-getting_there{background:#F59E0B}
+.tap-chip.sel-solid{background:#10B981}
+.tap-chip.sel-mastered{background:#EAB308}
+.topic-row{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px 11px;margin-bottom:8px}
+.topic-row-top{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.topic-row-top .topic-name{flex:1;padding:8px 11px;border:2px solid #E2E8F0;border-radius:8px;font-size:.88rem;color:#1E293B;font-family:inherit;background:#fff}
+.topic-row-top .topic-name:focus{outline:none;border-color:#6366F1}
+.topic-remove{background:none;border:none;color:#94A3B8;font-size:1rem;cursor:pointer;padding:5px 7px;border-radius:6px;line-height:1;flex-shrink:0}
+.topic-remove:hover{color:#EF4444;background:#FEE2E2}
+.add-topic-btn{background:#EEF2FF;color:#4F46E5;border:1px dashed #C7D2FE;border-radius:8px;padding:9px 12px;font-size:.83rem;font-weight:700;cursor:pointer;width:100%;transition:all .15s;margin-top:2px}
+.add-topic-btn:hover{background:#E0E7FF}
+.legacy-hint{background:#F1F5F9;border-radius:8px;padding:9px 11px;font-size:.79rem;color:#64748B;margin-bottom:10px;line-height:1.55}
+.private-box{background:#F5F3FF;border:1px dashed #A78BFA;border-radius:10px;padding:12px 14px;margin-top:4px}
+.private-box label{color:#6D28D9!important}
+.private-box textarea{background:#fff;border-color:#DDD6FE!important}
+.private-box textarea:focus{border-color:#7C3AED!important}
+
+/* ── Reports engine + student key-dates (BUILD 2a, additive) ── */
+.badge-gold{background:#FEF9C3;color:#854D0E}
+.kd-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.kd-row input{padding:8px 11px;border:2px solid #E2E8F0;border-radius:8px;font-size:.88rem;font-family:inherit;color:#1E293B;background:#fff}
+.kd-row input:focus{outline:none;border-color:#6366F1}
+.kd-row .kd-label{flex:1;min-width:0}
+.rp-report{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:24px 26px;max-width:860px}
+.rp-hd{border-bottom:2px solid #F1F5F9;padding-bottom:16px;margin-bottom:20px}
+.rp-hd h2{font-size:1.35rem;font-weight:800;color:#1E293B}
+.rp-hd .rp-sub{font-size:.9rem;color:#64748B;margin-top:4px}
+.rp-notice{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;font-size:.88rem;color:#64748B;margin-bottom:20px}
+.rp-sec{margin-bottom:24px}
+.rp-sec>h3{font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.rp-stat-row{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:6px}
+.rp-stat .v{font-size:1.5rem;font-weight:800;color:#6366F1;line-height:1.1}
+.rp-stat .l{font-size:.76rem;color:#64748B;margin-top:3px}
+.rp-goal-track{position:relative;height:12px;background:#E2E8F0;border-radius:99px;margin:14px 0}
+.rp-goal-fill{position:absolute;left:0;top:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#6366F1,#8B5CF6)}
+.rp-goal-mark{position:absolute;top:-4px;width:3px;height:20px;border-radius:2px}
+.rp-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.82rem;color:#475569;margin-top:14px}
+.rp-legend .k{display:inline-flex;align-items:center;gap:6px}
+.rp-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.rp-gap{font-size:.9rem;font-weight:700;margin-top:10px}
+.rp-traj{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rp-arrow{color:#94A3B8;font-weight:800}
+.rp-line{font-size:.9rem;color:#334155;line-height:1.6}
+.rp-empty{color:#94A3B8;font-size:.87rem;padding:2px 0}
+.rp-item{padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:.88rem;color:#334155}
+.rp-item:last-child{border-bottom:none}
+.rp-topic{padding:10px 0;border-bottom:1px solid #F1F5F9}
+.rp-topic:last-child{border-bottom:none}
+.rp-topic .nm{font-weight:700;color:#1E293B;font-size:.9rem;margin-right:8px}
+.rp-cadence{background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 16px;font-size:.9rem;color:#3730A3;line-height:1.6}
+
+/* ── Report delivery (BUILD 2b): styled print-to-PDF, matching the invoice approach ── */
+#reportPrintHost{position:fixed;left:-99999px;top:0;width:760px}
+@media print{
+  /* Gated by body.rp-printing so normal invoice printing is completely unaffected */
+  body.rp-printing #invoicePrintArea, body.rp-printing #invoicePrintArea *{visibility:hidden !important}
+  body.rp-printing #reportPrintHost{position:static !important;left:auto !important;width:100% !important}
+  body.rp-printing #reportPrintArea, body.rp-printing #reportPrintArea *{visibility:visible !important}
+  body.rp-printing #reportPrintArea{
+    position:absolute !important;left:0 !important;top:0 !important;
+    width:100% !important;max-width:100% !important;margin:0 !important;padding:16px !important;
+    box-shadow:none !important;border-radius:0 !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -405,6 +478,7 @@ service cloud.firestore {
       <a onclick="nav('pgSessions')" data-page="pgSessions"><span class="ic">📝</span>Session Logs</a>
       <a onclick="nav('pgProgress')" data-page="pgProgress"><span class="ic">📈</span>Progress &amp; Grades</a>
       <a onclick="nav('pgInvoice')" data-page="pgInvoice"><span class="ic">🧾</span>Invoices</a>
+      <a onclick="nav('pgReports')" data-page="pgReports"><span class="ic">📄</span>Reports</a>
       <a onclick="nav('pgSettings')" data-page="pgSettings"><span class="ic">⚙️</span>Settings</a>
     </nav>
     <div class="sidebar-user">
@@ -559,6 +633,26 @@ service cloud.firestore {
       </div>
     </div>
 
+    <!-- ───────── REPORTS ───────── -->
+    <div id="pgReports" class="page">
+      <div class="section-hd" style="margin-bottom:16px">
+        <div class="page-title" style="margin:0">Monthly Progress Report</div>
+      </div>
+      <div class="filter-row">
+        <select id="repStudent"><option value="">Select student...</option></select>
+        <select id="repMonth"></select>
+        <button class="btn btn-primary" onclick="generateReport()">Generate report</button>
+      </div>
+      <div class="filter-row" id="reportActions" style="margin-top:-4px;margin-bottom:16px">
+        <button class="btn btn-success" onclick="copyWhatsApp()">📱 Kopieer vir WhatsApp</button>
+        <button class="btn btn-ghost" onclick="downloadReportPDF()">📄 Laai PDF af</button>
+        <button class="btn btn-ghost" onclick="copyAIPrompt()">🤖 Kopieer AI-prompt</button>
+      </div>
+      <div id="reportOutput"></div>
+    </div>
+    <!-- Off-screen host for the branded report PDF (styled print, matches invoices) -->
+    <div id="reportPrintHost"><div id="reportPrintArea" class="invoice-preview"></div></div>
+
     <!-- ───────── SETTINGS ───────── -->
     <div id="pgSettings" class="page">
       <div class="page-title">Settings</div>
@@ -615,6 +709,7 @@ service cloud.firestore {
       <div class="tabs">
         <button class="tab active" onclick="switchTab('stu',0,this)">👤 Student Info</button>
         <button class="tab" onclick="switchTab('stu',1,this)">👨‍👩‍👧 Parent Info</button>
+        <button class="tab" onclick="switchTab('stu',2,this)">🎯 Goals</button>
       </div>
       <div id="stuTab0" class="tab-panel active">
         <div class="form-grid">
@@ -651,6 +746,20 @@ service cloud.firestore {
           <textarea id="sfAddr" placeholder="123 Main Street&#10;Suburb, City&#10;Postal Code"></textarea>
         </div>
       </div>
+      <div id="stuTab2" class="tab-panel">
+        <p style="font-size:.85rem;color:#64748B;margin-bottom:16px;line-height:1.5">Used to build monthly progress reports and a tailored session-frequency suggestion. All optional.</p>
+        <div class="form-grid">
+          <div class="form-row"><label>Baseline mark (%) <span style="font-weight:600;text-transform:none;color:#94A3B8">where they started</span></label>
+            <input id="sfBaseline" type="number" min="0" max="100" placeholder="e.g. 45"></div>
+          <div class="form-row"><label>Target mark (%) <span style="font-weight:600;text-transform:none;color:#94A3B8">the goal</span></label>
+            <input id="sfTarget" type="number" min="0" max="100" placeholder="e.g. 70"></div>
+        </div>
+        <div class="form-row">
+          <label>🗓️ Key dates <span style="font-weight:600;text-transform:none;color:#94A3B8">(trials, exams — add as many as you like)</span></label>
+          <div id="sfKeyDates"></div>
+          <button type="button" class="add-topic-btn" onclick="addKeyDateRow('','')">+ Add key date</button>
+        </div>
+      </div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-ghost" onclick="closeModal('studentModal')">Cancel</button>
@@ -673,7 +782,7 @@ service cloud.firestore {
       </div>
       <div id="sesTab0" class="tab-panel active">
         <div class="form-row"><label>Student *</label>
-          <select id="sesStudent"><option value="">Select student...</option></select>
+          <select id="sesStudent" onchange="buildTopicDatalist(this.value)"><option value="">Select student...</option></select>
         </div>
         <div class="form-grid">
           <div class="form-row"><label>Date *</label><input id="sesDate" type="date"></div>
@@ -689,11 +798,33 @@ service cloud.firestore {
           <div class="form-row"><label>Start Time</label><input id="sesStart" type="time"></div>
           <div class="form-row"><label>End Time</label><input id="sesEnd" type="time"></div>
         </div>
-        <div class="form-row"><label>Topics Covered</label>
-          <input id="sesTopic" placeholder="e.g. Quadratic equations, factorisation...">
+        <div class="form-row">
+          <label>📚 Topics covered &amp; progress</label>
+          <div id="sesLegacyHint" class="legacy-hint" style="display:none"></div>
+          <div id="sesTopics"></div>
+          <datalist id="topicNamesList"></datalist>
+          <button type="button" class="add-topic-btn" onclick="addTopicRow('','')">+ Add topic</button>
         </div>
         <div class="form-row"><label>Homework Set</label>
           <input id="sesHw" placeholder="e.g. Exercises 5.1 – 5.3">
+        </div>
+        <div class="form-row">
+          <label>✏️ Homework done? <span style="font-weight:600;text-transform:none;color:#94A3B8">(the homework set last time)</span></label>
+          <div class="tap-chips" id="sesHwDone" data-value="">
+            <button type="button" class="tap-chip" data-val="all"  onclick="pickChip(this,'sesHwDone')">✅ All</button>
+            <button type="button" class="tap-chip" data-val="some" onclick="pickChip(this,'sesHwDone')">◑ Some</button>
+            <button type="button" class="tap-chip" data-val="none" onclick="pickChip(this,'sesHwDone')">✕ None</button>
+            <button type="button" class="tap-chip" data-val="na"   onclick="pickChip(this,'sesHwDone')">— None set</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>🔥 Effort / engagement today</label>
+          <div class="tap-chips" id="sesEffort" data-value="">
+            <button type="button" class="tap-chip" data-val="low"       onclick="pickChip(this,'sesEffort')">Low</button>
+            <button type="button" class="tap-chip" data-val="ok"        onclick="pickChip(this,'sesEffort')">OK</button>
+            <button type="button" class="tap-chip" data-val="good"      onclick="pickChip(this,'sesEffort')">Good</button>
+            <button type="button" class="tap-chip" data-val="excellent" onclick="pickChip(this,'sesEffort')">Excellent</button>
+          </div>
         </div>
         <div class="form-row">
           <label>🎯 Student Confidence (1–10)</label>
@@ -705,14 +836,18 @@ service cloud.firestore {
         </div>
       </div>
       <div id="sesTab1" class="tab-panel">
-        <div class="form-row"><label>✅ What went well</label>
-          <textarea id="sesWell" placeholder="Student understood factorisation quickly..."></textarea>
+        <div class="form-row"><label>✅ One thing that went well <span style="font-weight:600;text-transform:none;color:#94A3B8">(optional)</span></label>
+          <input id="sesWin" placeholder="e.g. Finally understood factorising trinomials">
         </div>
-        <div class="form-row"><label>⚠️ Needs more work</label>
-          <textarea id="sesWork" placeholder="Struggled with the quadratic formula..."></textarea>
+        <div class="form-row"><label>🎯 Main thing to focus on next <span style="font-weight:600;text-transform:none;color:#94A3B8">(optional)</span></label>
+          <input id="sesFocus" placeholder="e.g. Needs more practice with word problems">
         </div>
-        <div class="form-row"><label>📋 Next session plan</label>
+        <div class="form-row"><label>📋 Next session plan <span style="font-weight:600;text-transform:none;color:#94A3B8">(optional)</span></label>
           <textarea id="sesPlan" placeholder="Review homework, introduce completing the square..."></textarea>
+        </div>
+        <div class="private-box">
+          <label>🔒 Private note <span style="font-weight:600;text-transform:none">(only you — never shown to parents)</span></label>
+          <textarea id="sesPrivate" placeholder="For your eyes only — e.g. parent mentioned exam stress at home"></textarea>
         </div>
       </div>
     </div>
@@ -1047,6 +1182,7 @@ function nav(pageId) {
     pgSessions: renderSessions,
     pgProgress: renderProgress,
     pgInvoice:  renderInvoiceList,
+    pgReports:  renderReportsTab,
     pgSettings: loadSettingsForm
   };
   if (renders[pageId]) renders[pageId]();
@@ -1144,6 +1280,7 @@ function fillStudentSelects() {
     { id:'grStudent',        placeholder:'Select student...',  all:false, activeOnly:false },
     { id:'progStudent',      placeholder:'Select a student...', all:false, activeOnly:false },
     { id:'invStudent',       placeholder:'Select Student...', all:false, activeOnly:true  },
+    { id:'repStudent',       placeholder:'Select student...',  all:false, activeOnly:false },
   ];
   configs.forEach(({ id, placeholder, all, activeOnly }) => {
     const el = document.getElementById(id);
@@ -1176,6 +1313,18 @@ function fillMonthSelects() {
     invEl.innerHTML = '';
     months.forEach(m => invEl.innerHTML += `<option value="${m}">${monthLabel(m)}</option>`);
     invEl.value = prev;
+  }
+
+  // Reports period picker — include months that have sessions OR grades.
+  const repEl = document.getElementById('repMonth');
+  if (repEl) {
+    const prev = repEl.value || now;
+    const repMonths = [...new Set([now,
+      ...DB.sessions.map(s => monthKey(s.date)),
+      ...DB.grades.map(g => monthKey(g.date))].filter(Boolean))].sort().reverse();
+    repEl.innerHTML = '';
+    repMonths.forEach(m => repEl.innerHTML += `<option value="${m}">${monthLabel(m)}</option>`);
+    repEl.value = prev;
   }
 }
 
@@ -1371,8 +1520,14 @@ function openStudentModal(id) {
     sfPEmail: s.pEmail   || '',
     sfPPhone: s.pPhone   || '',
     sfAddr:   s.addr     || '',
+    sfBaseline: (s.baselineMark === undefined || s.baselineMark === null) ? '' : s.baselineMark,
+    sfTarget:   (s.targetMark   === undefined || s.targetMark   === null) ? '' : s.targetMark,
   };
   Object.entries(fields).forEach(([id, val]) => { document.getElementById(id).value = val; });
+  // BUILD 2a: key dates (missing/legacy -> empty list, no error)
+  document.getElementById('sfKeyDates').innerHTML = '';
+  const kds = Array.isArray(s.keyDates) ? s.keyDates : [];
+  if (kds.length) kds.forEach(k => addKeyDateRow((k && k.label) || '', (k && k.date) || ''));
   switchTab('stu', 0);
   openModal('studentModal');
 }
@@ -1382,21 +1537,29 @@ function saveStudent() {
   const last  = document.getElementById('sfLast').value.trim();
   if (!first) { toast('Please enter the student\'s first name'); return; }
   if (!last)  { toast('Please enter the student\'s last name'); return; }
-  const s = {
-    id:       editingStudentId || uid(),
-    first, last,
-    grade:    document.getElementById('sfGrade').value.trim(),
-    rate:     +document.getElementById('sfRate').value || +DB.settings.rate || 350,
-    subjects: document.getElementById('sfSubs').value.trim(),
-    color:    document.getElementById('sfColor').value,
-    status:   document.getElementById('sfStatus').value,
-    notes:    document.getElementById('sfNotes').value.trim(),
-    parent:   document.getElementById('sfParent').value.trim(),
-    rel:      document.getElementById('sfRel').value.trim(),
-    pEmail:   document.getElementById('sfPEmail').value.trim(),
-    pPhone:   document.getElementById('sfPPhone').value.trim(),
-    addr:     document.getElementById('sfAddr').value.trim(),
-  };
+  // Spread the existing student first so no previously-stored field is dropped.
+  const existing = (editingStudentId && DB.students.find(x => x.id === editingStudentId)) || {};
+  const s = Object.assign({}, existing);
+  s.id       = editingStudentId || existing.id || uid();
+  s.first    = first;
+  s.last     = last;
+  s.grade    = document.getElementById('sfGrade').value.trim();
+  s.rate     = +document.getElementById('sfRate').value || +DB.settings.rate || 350;
+  s.subjects = document.getElementById('sfSubs').value.trim();
+  s.color    = document.getElementById('sfColor').value;
+  s.status   = document.getElementById('sfStatus').value;
+  s.notes    = document.getElementById('sfNotes').value.trim();
+  s.parent   = document.getElementById('sfParent').value.trim();
+  s.rel      = document.getElementById('sfRel').value.trim();
+  s.pEmail   = document.getElementById('sfPEmail').value.trim();
+  s.pPhone   = document.getElementById('sfPPhone').value.trim();
+  s.addr     = document.getElementById('sfAddr').value.trim();
+  // BUILD 2a: goal fields (empty -> null; keyDates -> array of {label,date})
+  const bRaw = parseFloat(document.getElementById('sfBaseline').value);
+  const tRaw = parseFloat(document.getElementById('sfTarget').value);
+  s.baselineMark = Number.isFinite(bRaw) ? bRaw : null;
+  s.targetMark   = Number.isFinite(tRaw) ? tRaw : null;
+  s.keyDates     = collectKeyDates();
   if (editingStudentId) {
     DB.students = DB.students.map(x => x.id === editingStudentId ? s : x);
     toast('Student updated');
@@ -1567,17 +1730,146 @@ function openSessionModal(id) {
   document.getElementById('sesDate').value    = s.date    || todayStr();
   document.getElementById('sesStart').value   = s.start   || '08:00';
   document.getElementById('sesEnd').value     = s.end     || '09:00';
-  document.getElementById('sesTopic').value   = s.topic   || '';
   document.getElementById('sesHw').value      = s.hw      || '';
   document.getElementById('sesAtt').value     = s.att     || 'present';
-  document.getElementById('sesWell').value    = s.well    || '';
-  document.getElementById('sesWork').value    = s.work    || '';
   document.getElementById('sesPlan').value    = s.plan    || '';
   const conf = s.conf || 7;
   document.getElementById('sesConf').value    = conf;
   document.getElementById('sesConfVal').textContent = conf;
+
+  // ── BUILD 1: new structured fields (all optional; safe for old sessions) ──
+  document.getElementById('sesWin').value     = s.win         || '';
+  document.getElementById('sesFocus').value   = s.focus       || '';
+  document.getElementById('sesPrivate').value = s.privateNote || '';
+  setChipGroup('sesEffort', s.effort || '');
+  setChipGroup('sesHwDone', s.hwDone || '');
+
+  // Topic tracker — a missing/legacy topics field is treated as an empty list.
+  buildTopicDatalist(s.studentId || '');
+  const wrap = document.getElementById('sesTopics');
+  wrap.innerHTML = '';
+  const topics = Array.isArray(s.topics) ? s.topics : [];
+  if (topics.length) {
+    topics.forEach(t => addTopicRow((t && t.name) || '', (t && t.status) || ''));
+  } else {
+    addTopicRow('', '');   // one empty starter row
+  }
+
+  // For pre-tracking sessions, show (read-only) what the old freeform fields
+  // held so nothing looks lost. These values are preserved untouched on save.
+  const hint = document.getElementById('sesLegacyHint');
+  const legacyBits = [];
+  if (!topics.length) {
+    if (s.topic && s.topic.trim()) legacyBits.push('📚 <strong>' + escHtml(s.topic.trim()) + '</strong>');
+    if (s.well  && s.well.trim())  legacyBits.push('✅ ' + escHtml(s.well.trim()));
+    if (s.work  && s.work.trim())  legacyBits.push('⚠️ ' + escHtml(s.work.trim()));
+  }
+  if (legacyBits.length) {
+    hint.innerHTML = 'ℹ️ Logged before topic tracking — previously recorded: ' + legacyBits.join(' &nbsp;·&nbsp; ') +
+      '. This is kept. Add topics below to start structured tracking.';
+    hint.style.display = 'block';
+  } else {
+    hint.innerHTML = '';
+    hint.style.display = 'none';
+  }
+
   switchTab('ses', 0);
   openModal('sessionModal');
+}
+
+// ── BUILD 1 helpers: tap-chips + topic tracker (all additive) ──────────────
+function escHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Single-select chip group (effort, hwDone). Selection lives on the container's
+// data-value; an empty string means nothing picked (fine for old sessions).
+function pickChip(btn, groupId) { setChipGroup(groupId, btn.dataset.val); }
+function setChipGroup(groupId, value) {
+  const grp = document.getElementById(groupId);
+  if (!grp) return;
+  grp.dataset.value = value || '';
+  grp.querySelectorAll('.tap-chip').forEach(c => {
+    const on = !!value && c.dataset.val === value;
+    c.classList.toggle('sel', on);
+    c.classList.toggle('sel-plain', on);
+  });
+}
+
+// One topic = { name, status }. Status chips are colour-coded per status.
+function pickTopicStatus(btn) {
+  const row = btn.closest('.topic-row');
+  const status = btn.dataset.status;
+  row.dataset.status = status;
+  row.querySelectorAll('[data-role="topicstatus"] .tap-chip').forEach(c => {
+    const on = c === btn;
+    c.classList.remove('sel', 'sel-struggled', 'sel-getting_there', 'sel-solid', 'sel-mastered');
+    if (on) c.classList.add('sel', 'sel-' + status);
+  });
+}
+
+function addTopicRow(name, status) {
+  const wrap = document.getElementById('sesTopics');
+  if (!wrap) return;
+  const row = document.createElement('div');
+  row.className = 'topic-row';
+  row.dataset.status = '';
+  row.innerHTML =
+    '<div class="topic-row-top">' +
+      '<input class="topic-name" list="topicNamesList" placeholder="Topic name (e.g. Quadratic equations)">' +
+      '<button type="button" class="topic-remove" onclick="removeTopicRow(this)" title="Remove topic">✕</button>' +
+    '</div>' +
+    '<div class="tap-chips" data-role="topicstatus">' +
+      '<button type="button" class="tap-chip" data-status="struggled" onclick="pickTopicStatus(this)">Struggled</button>' +
+      '<button type="button" class="tap-chip" data-status="getting_there" onclick="pickTopicStatus(this)">Getting there</button>' +
+      '<button type="button" class="tap-chip" data-status="solid" onclick="pickTopicStatus(this)">Solid</button>' +
+      '<button type="button" class="tap-chip" data-status="mastered" onclick="pickTopicStatus(this)">★ Mastered</button>' +
+    '</div>';
+  wrap.appendChild(row);
+  row.querySelector('.topic-name').value = name || '';
+  if (status) {
+    const chip = row.querySelector('[data-role="topicstatus"] .tap-chip[data-status="' + status + '"]');
+    if (chip) pickTopicStatus(chip);
+  }
+}
+
+function removeTopicRow(btn) {
+  const wrap = document.getElementById('sesTopics');
+  const row = btn.closest('.topic-row');
+  if (row) row.remove();
+  if (wrap && !wrap.children.length) addTopicRow('', '');   // always keep one row
+}
+
+function collectTopics() {
+  const out = [];
+  document.querySelectorAll('#sesTopics .topic-row').forEach(r => {
+    const nameEl = r.querySelector('.topic-name');
+    const name = nameEl ? nameEl.value.trim() : '';
+    if (!name) return;                         // skip blank rows silently (no error)
+    out.push({ name: name, status: r.dataset.status || '' });
+  });
+  return out;
+}
+
+// Suggest previously-used topic names for consistency (this student first,
+// then names used with other students). Powers the <datalist> autocomplete.
+function buildTopicDatalist(studentId) {
+  const dl = document.getElementById('topicNamesList');
+  if (!dl) return;
+  const mine = [], other = [], seenMine = new Set(), seenOther = new Set();
+  DB.sessions.forEach(s => {
+    const names = [];
+    if (Array.isArray(s.topics)) s.topics.forEach(t => { if (t && t.name) names.push(String(t.name).trim()); });
+    if (typeof s.topic === 'string') s.topic.split(',').forEach(n => { const nm = n.trim(); if (nm) names.push(nm); });
+    names.forEach(nm => {
+      if (!nm) return;
+      const key = nm.toLowerCase();
+      if (s.studentId === studentId) { if (!seenMine.has(key))  { seenMine.add(key);  mine.push(nm); } }
+      else                          { if (!seenOther.has(key)) { seenOther.add(key); other.push(nm); } }
+    });
+  });
+  const otherOnly = other.filter(nm => !seenMine.has(nm.toLowerCase()));
+  dl.innerHTML = mine.concat(otherOnly).map(n => '<option value="' + escHtml(n) + '"></option>').join('');
 }
 
 function saveSession() {
@@ -1585,19 +1877,43 @@ function saveSession() {
   const date      = document.getElementById('sesDate').value;
   if (!studentId) { toast('Please select a student'); return; }
   if (!date)      { toast('Please enter a date'); return; }
-  const s = {
-    id:        editingSessionId || uid(),
-    studentId, date,
-    start:     document.getElementById('sesStart').value,
-    end:       document.getElementById('sesEnd').value,
-    topic:     document.getElementById('sesTopic').value.trim(),
-    hw:        document.getElementById('sesHw').value.trim(),
-    att:       document.getElementById('sesAtt').value,
-    well:      document.getElementById('sesWell').value.trim(),
-    work:      document.getElementById('sesWork').value.trim(),
-    plan:      document.getElementById('sesPlan').value.trim(),
-    conf:      parseInt(document.getElementById('sesConf').value) || 7,
-  };
+
+  // Start from the existing document so EVERY previously-stored field is kept.
+  // This is an additive save — we set only the keys below and never drop others.
+  const existing = (editingSessionId && DB.sessions.find(x => x.id === editingSessionId)) || {};
+  const s = Object.assign({}, existing);
+  s.id        = editingSessionId || existing.id || uid();
+  s.studentId = studentId;
+  s.date      = date;
+  s.start     = document.getElementById('sesStart').value;
+  s.end       = document.getElementById('sesEnd').value;
+  s.hw        = document.getElementById('sesHw').value.trim();
+  s.att       = document.getElementById('sesAtt').value;
+  s.plan      = document.getElementById('sesPlan').value.trim();
+  s.conf      = parseInt(document.getElementById('sesConf').value) || 7;
+
+  // ── BUILD 1: new structured fields ──
+  const topics = collectTopics();
+  s.topics      = topics;                                              // [{name,status}]
+  s.effort      = document.getElementById('sesEffort').dataset.value || '';   // low|ok|good|excellent
+  s.hwDone      = document.getElementById('sesHwDone').dataset.value || '';   // none|some|all|na
+  s.win         = document.getElementById('sesWin').value.trim();
+  s.focus       = document.getElementById('sesFocus').value.trim();
+  s.privateNote = document.getElementById('sesPrivate').value.trim();
+
+  // Derive the legacy freeform fields from the topics so any existing code that
+  // reads topic/well/work keeps working. If no structured topics were entered
+  // (e.g. lightly editing an old session), preserve the original values.
+  if (topics.length) {
+    s.topic = topics.map(t => t.name).join(', ');
+    s.well  = topics.filter(t => t.status === 'solid'     || t.status === 'mastered').map(t => t.name).join(', ');
+    s.work  = topics.filter(t => t.status === 'struggled' || t.status === 'getting_there').map(t => t.name).join(', ');
+  } else {
+    s.topic = existing.topic || '';
+    s.well  = existing.well  || '';
+    s.work  = existing.work  || '';
+  }
+
   if (editingSessionId) {
     DB.sessions = DB.sessions.map(x => x.id === editingSessionId ? s : x);
     toast('Session updated');
@@ -1754,6 +2070,637 @@ function toggleIncome() {
   const open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'grid';
   if (chev) chev.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+// ════════════════════════════════════════
+// REPORTS (BUILD 2a) — read-only report engine
+// ════════════════════════════════════════
+
+// ── Student goal key-dates tracker (student modal → Goals tab) ──
+function addKeyDateRow(label, date) {
+  const wrap = document.getElementById('sfKeyDates');
+  if (!wrap) return;
+  const row = document.createElement('div');
+  row.className = 'kd-row';
+  row.innerHTML =
+    '<input class="kd-label" placeholder="Label (e.g. Trial exam)">' +
+    '<input class="kd-date" type="date">' +
+    '<button type="button" class="topic-remove" onclick="removeKeyDateRow(this)" title="Remove key date">✕</button>';
+  wrap.appendChild(row);
+  row.querySelector('.kd-label').value = label || '';
+  row.querySelector('.kd-date').value  = date || '';
+}
+function removeKeyDateRow(btn) {
+  const row = btn.closest('.kd-row');
+  if (row) row.remove();
+}
+function collectKeyDates() {
+  const out = [];
+  document.querySelectorAll('#sfKeyDates .kd-row').forEach(r => {
+    const label = (r.querySelector('.kd-label').value || '').trim();
+    const date  = (r.querySelector('.kd-date').value  || '').trim();
+    if (!date) return;                 // a key date needs a date; skip incomplete rows
+    out.push({ label: label, date: date });
+  });
+  return out;
+}
+
+// ── Report metadata + small helpers ──
+const RP_STATUS = {
+  struggled:     { label:'Struggled',     rank:1, badge:'badge-red' },
+  getting_there: { label:'Getting there', rank:2, badge:'badge-yellow' },
+  solid:         { label:'Solid',         rank:3, badge:'badge-green' },
+  mastered:      { label:'Mastered',      rank:4, badge:'badge-gold' }
+};
+const RP_EFFORT = { low:{label:'low',rank:1}, ok:{label:'OK',rank:2}, good:{label:'good',rank:3}, excellent:{label:'excellent',rank:4} };
+function numOrNull(v){ const n = parseFloat(v); return Number.isFinite(n) ? n : null; }
+function statusPill(st){ const m = RP_STATUS[st]; return m ? `<span class="badge ${m.badge}">${m.label}</span>` : ''; }
+function listNames(arr, n){
+  const a = arr.slice(0, n);
+  if (a.length <= 1) return a[0] || '';
+  if (a.length === 2) return a[0] + ' and ' + a[1];
+  return a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+}
+
+function renderReportsTab(){
+  const out = document.getElementById('reportOutput');
+  if (out && !out.dataset.generated) {
+    out.innerHTML = '<div class="rp-report"><div class="rp-empty" style="text-align:center;padding:30px 10px">Pick a student and a month above, then tap <strong>Generate report</strong> to build their monthly progress report.</div></div>';
+  }
+}
+
+// READ-ONLY: assembles the on-screen report. Never writes to Firestore.
+// privateNote is deliberately never read here.
+function generateReport(){
+  const sid = document.getElementById('repStudent').value;
+  const period = document.getElementById('repMonth').value || todayStr().slice(0, 7);
+  const out = document.getElementById('reportOutput');
+  if (!sid){ toast('Please select a student'); return; }
+  const stu = DB.students.find(x => x.id === sid) || {};
+  const firstName = stu.first || (stu.name ? stu.name.split(' ')[0] : '') || 'This student';
+  const periodEnd = period + '-31';
+
+  // Sessions in period (chronological)
+  const sess = DB.sessions.filter(s => s.studentId === sid && monthKey(s.date) === period)
+    .sort((a,b) => a.date === b.date ? String(a.start||'').localeCompare(String(b.start||'')) : (a.date < b.date ? -1 : 1));
+  const attended = sess.filter(s => s.att !== 'absent');
+  const hours = attended.reduce((a,s) => a + calcH(s.start, s.end), 0);
+
+  // Grades
+  const gradesInPeriod = DB.grades.filter(g => g.studentId === sid && monthKey(g.date) === period).sort((a,b) => a.date < b.date ? -1 : 1);
+  const gradesUpTo = DB.grades.filter(g => g.studentId === sid && g.date && g.date <= periodEnd).sort((a,b) => a.date < b.date ? -1 : 1);
+  const recentGrade = gradesUpTo.length ? gradesUpTo[gradesUpTo.length - 1] : null;
+  const recentPct = recentGrade ? Math.round(recentGrade.score / recentGrade.total * 100) : null;
+  const baseline = numOrNull(stu.baselineMark);
+  const target   = numOrNull(stu.targetMark);
+  const markColor = v => v == null ? '#6366F1' : v >= 75 ? '#10B981' : v >= 50 ? '#F59E0B' : '#EF4444';
+  const clamp = v => Math.max(0, Math.min(100, v));
+
+  let html = '<div class="rp-report">';
+
+  // Header
+  html += `<div class="rp-hd">
+    <h2>${escHtml(stuFullName(stu))}</h2>
+    <div class="rp-sub">${stu.grade ? escHtml(stu.grade) + ' &nbsp;·&nbsp; ' : ''}${escHtml(monthLabel(period))} progress report</div>
+    <div class="rp-stat-row" style="margin-top:14px">
+      <div class="rp-stat"><div class="v">${attended.length}</div><div class="l">Sessions attended</div></div>
+      <div class="rp-stat"><div class="v">${hours.toFixed(1)}h</div><div class="l">Total hours</div></div>
+      <div class="rp-stat"><div class="v" style="color:${markColor(recentPct)}">${recentPct != null ? recentPct + '%' : '—'}</div><div class="l">Most recent mark</div></div>
+    </div>
+  </div>`;
+
+  if (!sess.length){
+    html += `<div class="rp-notice">📭 No sessions logged in ${escHtml(monthLabel(period))}. Showing goal progress and any test marks up to this period.</div>`;
+  }
+
+  // Progress vs goal
+  html += `<div class="rp-sec"><h3>🎯 Progress vs goal</h3>`;
+  if (baseline == null && target == null && recentPct == null){
+    html += `<div class="rp-empty">No goal set and no test marks yet. Add a baseline and target on ${escHtml(firstName)}'s profile (Goals tab), and log assessments, to track progress here.</div>`;
+  } else {
+    html += `<div class="rp-goal-track">`;
+    if (recentPct != null) html += `<div class="rp-goal-fill" style="width:${clamp(recentPct)}%"></div>`;
+    if (baseline != null)  html += `<div class="rp-goal-mark" style="left:${clamp(baseline)}%;background:#94A3B8"></div>`;
+    if (target != null)    html += `<div class="rp-goal-mark" style="left:${clamp(target)}%;background:#10B981"></div>`;
+    if (recentPct != null) html += `<div class="rp-goal-mark" style="left:${clamp(recentPct)}%;background:#1E293B"></div>`;
+    html += `</div><div class="rp-legend">
+      ${baseline != null ? `<span class="k"><span class="rp-dot" style="background:#94A3B8"></span>Baseline ${baseline}%</span>` : ''}
+      ${recentPct != null ? `<span class="k"><span class="rp-dot" style="background:#1E293B"></span>Now ${recentPct}%</span>` : `<span class="k rp-empty">No test marks yet</span>`}
+      ${target != null ? `<span class="k"><span class="rp-dot" style="background:#10B981"></span>Target ${target}%</span>` : ''}
+    </div>`;
+    if (target != null && recentPct != null){
+      const gap = target - recentPct;
+      if (gap <= 0) html += `<div class="rp-gap" style="color:#10B981">On target — ${escHtml(firstName)} has reached the ${target}% goal. 🎉</div>`;
+      else {
+        const gained = baseline != null ? (recentPct - baseline) : null;
+        html += `<div class="rp-gap" style="color:#D97706">${gap}% to go to reach the ${target}% goal${gained != null && gained > 0 ? ` — up ${gained}% from a ${baseline}% baseline` : ''}.</div>`;
+      }
+    } else if (target != null && recentPct == null){
+      html += `<div class="rp-gap" style="color:#64748B">Target ${target}% set — log a test mark to see the gap.</div>`;
+    }
+  }
+  html += `</div>`;
+
+  // Test marks this period
+  html += `<div class="rp-sec"><h3>📊 Test marks this period</h3>`;
+  if (gradesInPeriod.length){
+    gradesInPeriod.forEach(g => {
+      const pct = Math.round(g.score / g.total * 100);
+      html += `<div class="rp-item" style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+        <div><strong>${escHtml(g.name)}</strong>${g.subject ? ` <span style="color:#94A3B8">· ${escHtml(g.subject)}</span>` : ''}<br><span style="color:#94A3B8;font-size:.82rem">${fmtDate(g.date)}</span></div>
+        <div style="font-weight:800;color:${markColor(pct)};white-space:nowrap">${g.score}/${g.total} <span style="font-size:.82rem">(${pct}%)</span></div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="rp-empty">No test marks recorded this period.</div>`;
+  }
+  html += `</div>`;
+
+  // Session-derived sections (only when there are sessions)
+  if (sess.length){
+    // Topics + trajectory (the key feature)
+    const topicMap = new Map();
+    sess.forEach(s => { if (Array.isArray(s.topics)) s.topics.forEach(t => {
+      if (!t || !t.name) return;
+      const key = String(t.name).trim().toLowerCase();
+      if (!key) return;
+      if (!topicMap.has(key)) topicMap.set(key, { name: String(t.name).trim(), seq: [] });
+      topicMap.get(key).seq.push(t.status || '');
+    }); });
+    html += `<div class="rp-sec"><h3>📚 Topics this period</h3>`;
+    if (topicMap.size){
+      topicMap.forEach(t => {
+        const valid = t.seq.filter(st => RP_STATUS[st]);
+        const latest = valid.length ? valid[valid.length - 1] : '';
+        const collapsed = valid.filter((st, i) => i === 0 || st !== valid[i - 1]);
+        const traj = collapsed.length > 1
+          ? `<div class="rp-traj" style="margin-top:6px">${collapsed.map(st => statusPill(st)).join('<span class="rp-arrow">→</span>')}</div>`
+          : '';
+        html += `<div class="rp-topic"><span class="nm">${escHtml(t.name)}</span>${latest ? statusPill(latest) : '<span class="rp-empty">no status</span>'}${traj}</div>`;
+      });
+    } else {
+      const legacy = [...new Set(sess.map(s => (s.topic || '').trim()).filter(Boolean).flatMap(t => t.split(',').map(x => x.trim()).filter(Boolean)))];
+      html += legacy.length ? `<div class="rp-line">Topics covered: ${legacy.map(escHtml).join(', ')}</div>` : `<div class="rp-empty">No topics recorded this period.</div>`;
+    }
+    html += `</div>`;
+
+    // Effort
+    const eff = sess.map(s => s.effort).filter(e => RP_EFFORT[e]);
+    html += `<div class="rp-sec"><h3>🔥 Effort</h3>`;
+    if (eff.length){
+      const avg = eff.reduce((a,e) => a + RP_EFFORT[e].rank, 0) / eff.length;
+      const nearest = Object.keys(RP_EFFORT).reduce((best,k) => Math.abs(RP_EFFORT[k].rank - avg) < Math.abs(RP_EFFORT[best].rank - avg) ? k : best, 'ok');
+      const firstR = RP_EFFORT[eff[0]].rank, lastR = RP_EFFORT[eff[eff.length - 1]].rank;
+      const trend = eff.length < 2 ? '' : lastR > firstR ? ' and improving' : lastR < firstR ? ' but dipping recently' : ' and steady';
+      html += `<div class="rp-line">${escHtml(firstName)}'s effort was <strong>${RP_EFFORT[nearest].label}</strong> overall${trend} (${eff.length} of ${sess.length} sessions rated).</div>`;
+    } else {
+      html += `<div class="rp-empty">No effort noted this period.</div>`;
+    }
+    html += `</div>`;
+
+    // Homework
+    const hwAll = sess.filter(s => s.hwDone === 'all').length;
+    const hwSome = sess.filter(s => s.hwDone === 'some').length;
+    const hwNone = sess.filter(s => s.hwDone === 'none').length;
+    const hwTracked = hwAll + hwSome + hwNone;
+    html += `<div class="rp-sec"><h3>✏️ Homework</h3>`;
+    html += hwTracked
+      ? `<div class="rp-line">Homework done in full in <strong>${hwAll} of ${hwTracked}</strong> sessions${hwSome ? `, partially in ${hwSome}` : ''}${hwNone ? `, not done in ${hwNone}` : ''}.</div>`
+      : `<div class="rp-empty">No homework tracked this period.</div>`;
+    html += `</div>`;
+
+    // Wins
+    const wins = sess.filter(s => s.win && s.win.trim());
+    if (wins.length){
+      html += `<div class="rp-sec"><h3>✅ Wins</h3>`;
+      wins.forEach(s => html += `<div class="rp-item">${escHtml(s.win.trim())} <span style="color:#94A3B8;font-size:.8rem">· ${fmtDate(s.date)}</span></div>`);
+      html += `</div>`;
+    }
+
+    // Focus areas
+    const focuses = sess.filter(s => s.focus && s.focus.trim());
+    if (focuses.length){
+      html += `<div class="rp-sec"><h3>🎯 Focus areas</h3>`;
+      focuses.forEach(s => html += `<div class="rp-item">${escHtml(s.focus.trim())} <span style="color:#94A3B8;font-size:.8rem">· ${fmtDate(s.date)}</span></div>`);
+      html += `</div>`;
+    }
+  }
+
+  // Cadence recommendation
+  html += `<div class="rp-sec"><h3>📅 Session cadence</h3><div class="rp-cadence">${buildCadence(stu, firstName, recentPct, target, attended, sess)}</div></div>`;
+
+  html += `</div>`; // .rp-report
+  out.innerHTML = html;
+  out.dataset.generated = '1';
+}
+
+// Parent-friendly, goal-grounded frequency suggestion — never a sales pitch.
+function buildCadence(stu, firstName, recentPct, target, attended, sess){
+  const today = todayStr();
+  const upcoming = (Array.isArray(stu.keyDates) ? stu.keyDates : [])
+    .filter(k => k && k.date && k.date >= today)
+    .sort((a,b) => a.date < b.date ? -1 : 1);
+  const next = upcoming[0] || null;
+  let weeksTo = null;
+  if (next) weeksTo = Math.max(0, Math.round((new Date(next.date + 'T00:00:00') - new Date(today + 'T00:00:00')) / (7 * 24 * 3600 * 1000)));
+
+  const gap = (target != null && recentPct != null) ? (target - recentPct) : null;
+  const perWeek = attended.length ? attended.length / 4.3 : 0;
+  const freqTxt = !attended.length ? 'no sessions this month'
+    : perWeek >= 1.5 ? 'about 2 sessions a week'
+    : perWeek >= 0.9 ? 'about 1 session a week'
+    : `${attended.length} session${attended.length === 1 ? '' : 's'} this month`;
+
+  // topics whose LATEST status this period is not yet solid
+  const latestStatus = new Map();
+  sess.forEach(s => { if (Array.isArray(s.topics)) s.topics.forEach(t => {
+    if (t && t.name && RP_STATUS[t.status]) latestStatus.set(t.name.toLowerCase(), { name: t.name, status: t.status });
+  }); });
+  const notSolid = [...latestStatus.values()].filter(x => x.status === 'struggled' || x.status === 'getting_there').map(x => x.name);
+
+  const examSoon = weeksTo != null && weeksTo <= 8;
+  const bigGap = gap != null && gap >= 10;
+  const smallGap = gap != null && gap > 0 && gap < 10;
+
+  if (target == null && !next){
+    return `Add a target mark and any key dates on ${escHtml(firstName)}'s Goals tab and this will suggest a session frequency tailored to reaching the goal.`;
+  }
+  if (examSoon && (bigGap || notSolid.length)){
+    const hook = notSolid.length
+      ? ` and ${escHtml(listNames(notSolid, 2))} ${notSolid.length > 1 ? "aren't" : "isn't"} solid yet`
+      : (gap != null ? ` and there's still a ${gap}% gap to the ${target}% goal` : '');
+    return `${escHtml(next.label || 'A key assessment')} is on ${fmtDate(next.date)} (${weeksTo} week${weeksTo === 1 ? '' : 's'} away)${hook}. To give ${escHtml(firstName)} the best shot at it, I'd suggest moving toward 2 sessions a week until then.`;
+  }
+  if (bigGap){
+    return `${escHtml(firstName)} is at ${recentPct}%, a ${gap}% gap to the ${target}% goal. Stepping up to around 2 sessions a week would help close that gap sooner.`;
+  }
+  if (examSoon){
+    return `${escHtml(next.label || 'A key date')} is on ${fmtDate(next.date)} (${weeksTo} week${weeksTo === 1 ? '' : 's'} away). ${escHtml(firstName)} is tracking well — keeping ${freqTxt} through to then looks right, adding a session if any topic slips.`;
+  }
+  if (target != null && recentPct != null && recentPct >= target){
+    return `${escHtml(firstName)} has reached the ${target}% goal 🎉 — the current cadence (${freqTxt}) is working. Happy to hold steady or set a new stretch target.`;
+  }
+  if (smallGap){
+    return `${escHtml(firstName)} is close to the ${target}% goal (${gap}% to go). The current cadence (${freqTxt}) looks about right to get there.`;
+  }
+  return `${escHtml(firstName)} is progressing. Current cadence: ${freqTxt}. I'll sharpen this suggestion as more marks and topics are logged.`;
+}
+
+// ════════════════════════════════════════
+// REPORT DELIVERY (BUILD 2b) — read-only text/PDF outputs
+// privateNote is NEVER read or included in any of these.
+// ════════════════════════════════════════
+
+const AF_MONTHS = ['Januarie','Februarie','Maart','April','Mei','Junie','Julie','Augustus','September','Oktober','November','Desember'];
+const AF_STATUS_SHORT = { struggled:'Sukkel', getting_there:'Kom reg', solid:'Solied', mastered:'Bemeester' };
+const AF_STATUS_PROSE = { struggled:'sukkel nog', getting_there:'kom reg', solid:'goed onder die knie', mastered:'bemeester' };
+const AF_EFFORT = { low:'laag', ok:'redelik', good:'goed', excellent:'uitstekend' };
+function monthLabelAf(ym){ if(!ym) return ''; const p = ym.split('-'); return `${AF_MONTHS[+p[1]-1]} ${p[0]}`; }
+function fmtDateAf(d){ if(!d) return ''; const p = d.split('-'); return `${+p[2]} ${AF_MONTHS[+p[1]-1]} ${p[0]}`; }
+function namesToProse(arr){
+  const a = (arr||[]).filter(Boolean);
+  if (!a.length) return '';
+  if (a.length === 1) return a[0];
+  if (a.length === 2) return a[0] + ' en ' + a[1];
+  return a.slice(0,-1).join(', ') + ' en ' + a[a.length-1];
+}
+function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function parentFirstName(stu){
+  const raw = (stu.parent || '').trim();
+  if (!raw) return '';
+  const titles = ['mnr','mnr.','mev','mev.','mej','mej.','dr','dr.','me','me.','mr','mr.','mrs','mrs.','ms','ms.','miss','prof','prof.'];
+  const parts = raw.split(/\s+/);
+  for (const p of parts){ if (!titles.includes(p.toLowerCase())) return p; }
+  return parts[0] || '';
+}
+
+// Afrikaans cadence — mirrors buildCadence's branch logic; returns '' when no grounded suggestion.
+function buildCadenceAf(stu, firstName, recentPct, target, attended, sess){
+  const today = todayStr();
+  const upcoming = (Array.isArray(stu.keyDates) ? stu.keyDates : [])
+    .filter(k => k && k.date && k.date >= today).sort((a,b) => a.date < b.date ? -1 : 1);
+  const next = upcoming[0] || null;
+  let weeksTo = null;
+  if (next) weeksTo = Math.max(0, Math.round((new Date(next.date + 'T00:00:00') - new Date(today + 'T00:00:00')) / (7 * 24 * 3600 * 1000)));
+  const gap = (target != null && recentPct != null) ? (target - recentPct) : null;
+  const perWeek = attended.length ? attended.length / 4.3 : 0;
+  const freqAf = !attended.length ? 'geen sessies hierdie maand nie'
+    : perWeek >= 1.5 ? 'ongeveer 2 sessies per week'
+    : perWeek >= 0.9 ? 'ongeveer 1 sessie per week'
+    : `${attended.length} sessie${attended.length === 1 ? '' : 's'} hierdie maand`;
+  const latestStatus = new Map();
+  sess.forEach(s => { if (Array.isArray(s.topics)) s.topics.forEach(t => {
+    if (t && t.name && RP_STATUS[t.status]) latestStatus.set(t.name.toLowerCase(), { name: t.name, status: t.status });
+  }); });
+  const notSolid = [...latestStatus.values()].filter(x => x.status === 'struggled' || x.status === 'getting_there').map(x => x.name);
+  const wk = w => `${w} ${w === 1 ? 'week' : 'weke'}`;
+  const examSoon = weeksTo != null && weeksTo <= 8;
+  const bigGap = gap != null && gap >= 10;
+  const smallGap = gap != null && gap > 0 && gap < 10;
+
+  if (target == null && !next) return '';
+  if (examSoon && (bigGap || notSolid.length)){
+    const hook = notSolid.length
+      ? ` en ${namesToProse(notSolid.slice(0,2))} is nog nie ten volle onder die knie nie`
+      : (gap != null ? ` en daar is nog 'n ${gap}%-gaping tot die ${target}%-doel` : '');
+    return `Die ${next.label || 'volgende belangrike assessering'} is op ${fmtDateAf(next.date)} (${wk(weeksTo)} weg)${hook}. Om ${firstName} die beste kans te gee, stel ek voor ons beweeg na 2 sessies per week tot dan.`;
+  }
+  if (bigGap) return `${firstName} is op ${recentPct}%, 'n ${gap}%-gaping tot die ${target}%-doel. Om na ongeveer 2 sessies per week te beweeg sal help om die gaping vinniger toe te maak.`;
+  if (examSoon) return `Die ${next.label || 'volgende belangrike datum'} is op ${fmtDateAf(next.date)} (${wk(weeksTo)} weg). ${firstName} vaar goed — om ${freqAf} te hou tot dan lyk reg; ons voeg 'n sessie by as enige onderwerp glip.`;
+  if (target != null && recentPct != null && recentPct >= target) return `${firstName} het die ${target}%-doel bereik 🎉 — die huidige ritme (${freqAf}) werk goed. Ons kan so aanhou of 'n nuwe teiken stel.`;
+  if (smallGap) return `${firstName} is naby die ${target}%-doel (${gap}% oor). Die huidige ritme (${freqAf}) lyk reg om daar uit te kom.`;
+  return `${firstName} maak goeie vordering. Huidige ritme: ${freqAf}. Ek verfyn hierdie voorstel soos ons meer punte en onderwerpe aanteken.`;
+}
+
+// Single source of truth for all three delivery outputs. READ-ONLY; excludes privateNote.
+function assembleReportData(sid, period){
+  const stu = DB.students.find(x => x.id === sid) || {};
+  const firstName = stu.first || (stu.name ? stu.name.split(' ')[0] : '') || 'Die student';
+  const periodEnd = period + '-31';
+  const sess = DB.sessions.filter(s => s.studentId === sid && monthKey(s.date) === period)
+    .sort((a,b) => a.date === b.date ? String(a.start||'').localeCompare(String(b.start||'')) : (a.date < b.date ? -1 : 1));
+  const attended = sess.filter(s => s.att !== 'absent');
+  const hours = attended.reduce((a,s) => a + calcH(s.start, s.end), 0);
+
+  const grades = DB.grades.filter(g => g.studentId === sid && monthKey(g.date) === period).sort((a,b) => a.date < b.date ? -1 : 1)
+    .map(g => ({ name:g.name, subject:g.subject||'', date:g.date, score:g.score, total:g.total, pct: Math.round(g.score/g.total*100) }));
+  const gradesUpTo = DB.grades.filter(g => g.studentId === sid && g.date && g.date <= periodEnd).sort((a,b) => a.date < b.date ? -1 : 1);
+  const recentGrade = gradesUpTo.length ? gradesUpTo[gradesUpTo.length - 1] : null;
+  const recentPct = recentGrade ? Math.round(recentGrade.score / recentGrade.total * 100) : null;
+  const baseline = numOrNull(stu.baselineMark);
+  const target = numOrNull(stu.targetMark);
+  const gap = (target != null && recentPct != null) ? (target - recentPct) : null;
+  const gained = (baseline != null && recentPct != null) ? (recentPct - baseline) : null;
+
+  const topicMap = new Map();
+  sess.forEach(s => { if (Array.isArray(s.topics)) s.topics.forEach(t => {
+    if (!t || !t.name) return;
+    const key = String(t.name).trim().toLowerCase();
+    if (!key) return;
+    if (!topicMap.has(key)) topicMap.set(key, { name: String(t.name).trim(), seq: [] });
+    topicMap.get(key).seq.push(t.status || '');
+  }); });
+  const topics = [...topicMap.values()].map(t => {
+    const valid = t.seq.filter(st => RP_STATUS[st]);
+    const collapsed = valid.filter((st,i) => i === 0 || st !== valid[i-1]);
+    return { name: t.name, latest: valid.length ? valid[valid.length-1] : '', trajectory: collapsed };
+  });
+  const legacyTopics = topicMap.size ? [] : [...new Set(sess.map(s => (s.topic||'').trim()).filter(Boolean).flatMap(t => t.split(',').map(x => x.trim()).filter(Boolean)))];
+
+  const effRaw = sess.map(s => s.effort).filter(e => RP_EFFORT[e]);
+  let effort = null;
+  if (effRaw.length){
+    const avg = effRaw.reduce((a,e) => a + RP_EFFORT[e].rank, 0) / effRaw.length;
+    const nearest = Object.keys(RP_EFFORT).reduce((best,k) => Math.abs(RP_EFFORT[k].rank - avg) < Math.abs(RP_EFFORT[best].rank - avg) ? k : best, 'ok');
+    const firstR = RP_EFFORT[effRaw[0]].rank, lastR = RP_EFFORT[effRaw[effRaw.length-1]].rank;
+    effort = { key: nearest, rated: effRaw.length, total: sess.length, trend: effRaw.length < 2 ? 'steady' : lastR > firstR ? 'up' : lastR < firstR ? 'down' : 'steady' };
+  }
+  const hwAll = sess.filter(s => s.hwDone === 'all').length;
+  const hwSome = sess.filter(s => s.hwDone === 'some').length;
+  const hwNone = sess.filter(s => s.hwDone === 'none').length;
+  const hwTracked = hwAll + hwSome + hwNone;
+  const homework = hwTracked ? { all: hwAll, some: hwSome, none: hwNone, tracked: hwTracked } : null;
+  const wins = sess.filter(s => s.win && s.win.trim()).map(s => ({ text: s.win.trim(), date: s.date }));
+  const focuses = sess.filter(s => s.focus && s.focus.trim()).map(s => ({ text: s.focus.trim(), date: s.date }));
+
+  return {
+    sid, period, student: stu, studentName: stuFullName(stu), firstName,
+    parentName: (stu.parent||'').trim(), parentFirst: parentFirstName(stu), grade: stu.grade || '',
+    periodLabelAf: monthLabelAf(period),
+    sessionsAttended: attended.length, hasSessions: sess.length > 0, sessionCount: sess.length, hours,
+    baseline, target, recentPct, gap, gained, grades, topics, legacyTopics, effort, homework, wins, focuses,
+    cadenceAf: buildCadenceAf(stu, firstName, recentPct, target, attended, sess)
+  };
+}
+
+function reportSelection(){
+  const sid = document.getElementById('repStudent').value;
+  const period = document.getElementById('repMonth').value || todayStr().slice(0,7);
+  if (!sid){ toast('Please select a student first'); return null; }
+  return assembleReportData(sid, period);
+}
+
+// ── PART A: warm Afrikaans WhatsApp message (plain text, *bold*, no markdown tables) ──
+function buildWhatsAppText(d){
+  const L = [];
+  L.push(d.parentFirst ? `Goeiedag ${d.parentFirst}! 😊` : 'Goeiedag! 😊');
+  L.push('');
+  L.push(`Hier is ${d.firstName} se vorderingsverslag vir *${d.periodLabelAf}*.`);
+  L.push('');
+
+  const topicNames = d.topics.length ? d.topics.map(t => t.name) : d.legacyTopics;
+  if (topicNames.length){
+    L.push(`*Wat ons hierdie maand gedoen het:*`);
+    L.push(namesToProse(topicNames) + '.');
+    const improved = d.topics.find(t => t.trajectory.length > 1 && (t.latest === 'solid' || t.latest === 'mastered'));
+    if (improved) L.push(`${improved.name} het mooi verbeter en is nou ${AF_STATUS_PROSE[improved.latest]}. 🙌`);
+    L.push('');
+  }
+
+  if (d.target != null && d.recentPct != null){
+    if (d.gap <= 0) L.push(`*Vordering:* ${d.firstName} het reeds die ${d.target}%-doel bereik! 🎉`);
+    else if (d.baseline != null && d.gained > 0) L.push(`*Vordering:* ${d.firstName} het van ${d.baseline}% na ${d.recentPct}% verbeter — ons mik na die ${d.target}%-doel, nog ${d.gap}% om te gaan. Mooi so!`);
+    else L.push(`*Vordering:* ${d.firstName} is op ${d.recentPct}% — ons mik na die ${d.target}%-doel (nog ${d.gap}% om te gaan).`);
+    L.push('');
+  } else if (d.recentPct != null){
+    L.push(`*Vordering:* Mees onlangse toetspunt is ${d.recentPct}%.`);
+    L.push('');
+  }
+
+  if (d.wins.length){
+    L.push(`*Hoogtepunte:*`);
+    d.wins.slice(0,2).forEach(w => L.push(`• ${w.text}`));
+    L.push('');
+  }
+
+  let focusText = '';
+  if (d.focuses.length) focusText = d.focuses[d.focuses.length-1].text;
+  else { const t = d.topics.find(x => x.latest === 'struggled' || x.latest === 'getting_there'); if (t) focusText = t.name; }
+  if (focusText){ L.push(`*Waarop ons volgende fokus:* ${focusText}.`); L.push(''); }
+
+  if (d.cadenceAf){ L.push(d.cadenceAf); L.push(''); }
+
+  L.push('Laat weet gerus as julle enige vrae het! 😊');
+  const tutor = (DB.settings.name || DB.settings.biz || '').trim();
+  L.push(tutor ? `Groete,\n${tutor}` : 'Groete');
+  return L.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+function copyWhatsApp(){
+  const d = reportSelection(); if (!d) return;
+  copyToClipboard(buildWhatsAppText(d))
+    .then(() => toast('Gekopieer! 📋 Plak dit in WhatsApp.'))
+    .catch(() => toast('Kon nie kopieer nie — probeer weer'));
+}
+
+// ── PART C: ready-to-paste Claude prompt (parent-appropriate data only) ──
+function buildAIPrompt(d){
+  const L = [];
+  L.push('Jy is \'n warm, hulpvaardige wiskunde-tutor in Suid-Afrika wat \'n maandelikse vorderingsverslag vir \'n ouer skryf.');
+  L.push('');
+  L.push('SKRYF ASSEBLIEF:');
+  L.push('- In Suid-Afrikaanse Afrikaans: warm, vriendelik, aanmoedigend, professioneel-maar-persoonlik (soos \'n omgee-tutor wat vir \'n ouer boodskap).');
+  L.push(`- Groet die ouer op die naam (${d.parentFirst || '[ouer se naam]'}).`);
+  L.push('- Wees positief en spesifiek oor die kind se vordering; eerlik oor wat nog aandag kort, maar bemoedigend gestel.');
+  L.push('- Geen jargon nie — die ouer moet elke sin verstaan. Sluit warm af (bv. "Laat weet gerus as julle enige vrae het!").');
+  L.push('- Emoji spaarsaam en natuurlik (bv. 🙌 😊).');
+  L.push('- Formaat: \'n WhatsApp-gereed boodskap (*sterretjies* vir vetdruk, gewone reëls, geen tabelle nie). Bondig en leesbaar.');
+  L.push('- Gebruik SLEGS die data hieronder; moenie feite bysin nie.');
+  L.push('');
+  L.push('=== DATA ===');
+  L.push(`Leerder: ${d.studentName}${d.grade ? ' (' + d.grade + ')' : ''}`);
+  L.push(`Ouer: ${d.parentName || '(onbekend)'}`);
+  L.push(`Periode: ${d.periodLabelAf}`);
+  L.push(`Sessies bygewoon: ${d.sessionsAttended}; Totale ure: ${d.hours.toFixed(1)}`);
+  if (d.baseline != null || d.recentPct != null || d.target != null){
+    const parts = [];
+    if (d.baseline != null) parts.push(`beginpunt ${d.baseline}%`);
+    if (d.recentPct != null) parts.push(`mees onlangse punt ${d.recentPct}%`);
+    if (d.target != null) parts.push(`teiken ${d.target}%`);
+    L.push(`Vordering teenoor doel: ${parts.join(', ')}${d.gap != null ? (d.gap > 0 ? ` (nog ${d.gap}% tot die doel)` : ' (doel bereik)') : ''}`);
+  } else L.push('Vordering teenoor doel: geen doel of toetspunte beskikbaar nie');
+  L.push(d.grades.length ? 'Toetspunte hierdie periode: ' + d.grades.map(g => `${g.name} ${g.score}/${g.total} (${g.pct}%)${g.subject ? ' - ' + g.subject : ''} op ${fmtDateAf(g.date)}`).join('; ') : 'Toetspunte hierdie periode: geen');
+  if (d.topics.length){
+    L.push('Onderwerpe en vordering:');
+    d.topics.forEach(t => {
+      const traj = t.trajectory.length > 1 ? t.trajectory.map(s => AF_STATUS_SHORT[s]).join(' -> ') : (AF_STATUS_SHORT[t.latest] || 'aangeteken');
+      L.push(`  - ${t.name}: ${traj}`);
+    });
+  } else if (d.legacyTopics.length) L.push('Onderwerpe behandel: ' + d.legacyTopics.join(', '));
+  else L.push('Onderwerpe: geen aangeteken nie');
+  L.push(d.effort ? `Inset/toewyding: ${AF_EFFORT[d.effort.key]} oor die algemeen (${d.effort.rated} van ${d.effort.total} sessies), tendens: ${d.effort.trend === 'up' ? 'verbeterend' : d.effort.trend === 'down' ? 'afnemend' : 'bestendig'}` : 'Inset/toewyding: nie aangeteken nie');
+  L.push(d.homework ? `Huiswerk: ten volle gedoen in ${d.homework.all} van ${d.homework.tracked} sessies${d.homework.some ? `, gedeeltelik in ${d.homework.some}` : ''}${d.homework.none ? `, nie gedoen in ${d.homework.none}` : ''}` : 'Huiswerk: nie aangeteken nie');
+  if (d.wins.length) L.push('Hoogtepunte: ' + d.wins.map(w => w.text).join('; '));
+  if (d.focuses.length) L.push('Fokus vorentoe: ' + d.focuses.map(f => f.text).join('; '));
+  if (d.cadenceAf) L.push('Aanbevole sessie-frekwensie (reeds doel-gegrond; hou dit sorgsaam, nie \'n verkoopspraatjie nie): ' + d.cadenceAf);
+  L.push('=== EINDE DATA ===');
+  L.push('');
+  L.push('Skryf nou die Afrikaanse WhatsApp-boodskap aan die ouer.');
+  return L.join('\n');
+}
+function copyAIPrompt(){
+  const d = reportSelection(); if (!d) return;
+  copyToClipboard(buildAIPrompt(d))
+    .then(() => toast('Gekopieer! 🤖 Plak dit in Claude om die verslag te skryf.'))
+    .catch(() => toast('Kon nie kopieer nie — probeer weer'));
+}
+
+// ── PART B: branded PDF via styled print (same approach + look as invoices) ──
+function buildReportPrintHTML(d){
+  const biz = (DB.settings.biz||'').trim(), tName = (DB.settings.name||'').trim();
+  const tEmail = (DB.settings.email||'').trim(), tPhone = (DB.settings.phone||'').trim();
+  const markColor = v => v == null ? '#6366F1' : v >= 75 ? '#10B981' : v >= 50 ? '#F59E0B' : '#EF4444';
+  const clamp = v => Math.max(0, Math.min(100, v));
+  const pill = st => { const m = RP_STATUS[st]; if (!m) return ''; const c = { 'badge-red':['#FEE2E2','#991B1B'], 'badge-yellow':['#FEF3C7','#92400E'], 'badge-green':['#DCFCE7','#166534'], 'badge-gold':['#FEF9C3','#854D0E'] }[m.badge]; return `<span style="display:inline-block;background:${c[0]};color:${c[1]};border-radius:99px;padding:2px 9px;font-size:.72rem;font-weight:700">${AF_STATUS_SHORT[st]}</span>`; };
+  let h = '';
+  h += `<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #6366F1">
+    <div>
+      <div style="font-size:1.7rem;font-weight:900;color:#6366F1;letter-spacing:-.02em">VORDERINGSVERSLAG</div>
+      <div style="font-size:.92rem;color:#64748B;margin-top:4px">${escHtml(d.studentName)}${d.grade ? ' · ' + escHtml(d.grade) : ''}</div>
+      <div style="font-size:.85rem;color:#94A3B8;margin-top:2px">Periode: ${escHtml(d.periodLabelAf)}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:1.1rem;font-weight:800;color:#1E293B">${escHtml(biz || tName || 'MathTutor Pro')}</div>
+      ${biz && tName ? `<div style="font-size:.86rem;color:#475569">${escHtml(tName)}</div>` : ''}
+      ${tEmail ? `<div style="font-size:.83rem;color:#64748B">${escHtml(tEmail)}</div>` : ''}
+      ${tPhone ? `<div style="font-size:.83rem;color:#64748B">${escHtml(tPhone)}</div>` : ''}
+    </div>
+  </div>`;
+  h += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
+    <div>
+      <div style="font-size:.72rem;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Vir</div>
+      <div style="font-weight:800;font-size:1rem;color:#1E293B">${escHtml(d.parentName || d.studentName)}</div>
+      ${d.parentName ? `<div style="font-size:.85rem;color:#64748B">Ouer/voog van ${escHtml(d.studentName)}</div>` : ''}
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:.72rem;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Opsomming</div>
+      <div style="font-size:.88rem;color:#475569">Sessies bygewoon: <strong>${d.sessionsAttended}</strong></div>
+      <div style="font-size:.88rem;color:#475569">Totale ure: <strong>${d.hours.toFixed(1)}</strong></div>
+    </div>
+  </div>`;
+  h += `<div style="margin-bottom:22px"><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:10px">🎯 Vordering teenoor doel</div>`;
+  if (d.baseline == null && d.target == null && d.recentPct == null){
+    h += `<div style="color:#94A3B8;font-size:.87rem">Geen doel of toetspunte nog aangeteken nie.</div>`;
+  } else {
+    h += `<div style="position:relative;height:12px;background:#E2E8F0;border-radius:99px;margin:8px 0">`;
+    if (d.recentPct != null) h += `<div style="position:absolute;left:0;top:0;height:100%;border-radius:99px;width:${clamp(d.recentPct)}%;background:linear-gradient(90deg,#6366F1,#8B5CF6)"></div>`;
+    if (d.baseline != null) h += `<div style="position:absolute;top:-4px;width:3px;height:20px;border-radius:2px;left:${clamp(d.baseline)}%;background:#94A3B8"></div>`;
+    if (d.target != null) h += `<div style="position:absolute;top:-4px;width:3px;height:20px;border-radius:2px;left:${clamp(d.target)}%;background:#10B981"></div>`;
+    if (d.recentPct != null) h += `<div style="position:absolute;top:-4px;width:3px;height:20px;border-radius:2px;left:${clamp(d.recentPct)}%;background:#1E293B"></div>`;
+    h += `</div><div style="display:flex;gap:16px;font-size:.82rem;color:#475569;margin-top:10px;flex-wrap:wrap">
+      ${d.baseline != null ? `<span>⬤ Begin ${d.baseline}%</span>` : ''}
+      ${d.recentPct != null ? `<span>⬤ Nou ${d.recentPct}%</span>` : '<span style="color:#94A3B8">Nog geen toetspunt nie</span>'}
+      ${d.target != null ? `<span>⬤ Teiken ${d.target}%</span>` : ''}
+    </div>`;
+    if (d.target != null && d.recentPct != null){
+      if (d.gap <= 0) h += `<div style="font-size:.88rem;font-weight:700;color:#10B981;margin-top:8px">Op teiken — ${escHtml(d.firstName)} het die ${d.target}%-doel bereik! 🎉</div>`;
+      else h += `<div style="font-size:.88rem;font-weight:700;color:#D97706;margin-top:8px">Nog ${d.gap}% tot die ${d.target}%-doel${d.gained != null && d.gained > 0 ? ` — ${d.gained}% op sedert ${d.baseline}%` : ''}.</div>`;
+    }
+  }
+  h += `</div>`;
+  h += `<div style="margin-bottom:22px"><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:10px">📊 Toetspunte hierdie periode</div>`;
+  if (d.grades.length){
+    d.grades.forEach(g => { h += `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F1F5F9;font-size:.87rem"><span><strong>${escHtml(g.name)}</strong>${g.subject ? ' · ' + escHtml(g.subject) : ''} <span style="color:#94A3B8">(${fmtDateAf(g.date)})</span></span><span style="font-weight:800;color:${markColor(g.pct)}">${g.score}/${g.total} (${g.pct}%)</span></div>`; });
+  } else h += `<div style="color:#94A3B8;font-size:.87rem">Geen toetspunte hierdie periode nie.</div>`;
+  h += `</div>`;
+  if (d.hasSessions){
+    h += `<div style="margin-bottom:22px"><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:10px">📚 Onderwerpe hierdie maand</div>`;
+    if (d.topics.length){
+      d.topics.forEach(t => {
+        const traj = t.trajectory.length > 1 ? ' &nbsp; ' + t.trajectory.map(pill).join(' <span style="color:#94A3B8">→</span> ') : '';
+        h += `<div style="padding:7px 0;border-bottom:1px solid #F1F5F9;font-size:.87rem"><strong>${escHtml(t.name)}</strong> &nbsp; ${t.latest ? pill(t.latest) : ''}${traj}</div>`;
+      });
+    } else if (d.legacyTopics.length) h += `<div style="font-size:.87rem;color:#334155">Behandel: ${d.legacyTopics.map(escHtml).join(', ')}</div>`;
+    else h += `<div style="color:#94A3B8;font-size:.87rem">Geen onderwerpe aangeteken nie.</div>`;
+    h += `</div>`;
+    h += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px">
+      <div><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:8px">🔥 Inset</div>${d.effort ? `<div style="font-size:.87rem;color:#334155">${cap(AF_EFFORT[d.effort.key])} oor die algemeen${d.effort.trend === 'up' ? ', verbeterend' : d.effort.trend === 'down' ? ', maar afnemend' : ''} (${d.effort.rated}/${d.effort.total} sessies).</div>` : `<div style="color:#94A3B8;font-size:.87rem">Nie aangeteken nie.</div>`}</div>
+      <div><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:8px">✏️ Huiswerk</div>${d.homework ? `<div style="font-size:.87rem;color:#334155">Ten volle gedoen in <strong>${d.homework.all} van ${d.homework.tracked}</strong> sessies${d.homework.some ? `, gedeeltelik in ${d.homework.some}` : ''}.</div>` : `<div style="color:#94A3B8;font-size:.87rem">Nie aangeteken nie.</div>`}</div>
+    </div>`;
+    if (d.wins.length){
+      h += `<div style="margin-bottom:22px"><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:8px">✅ Hoogtepunte</div>`;
+      d.wins.forEach(w => h += `<div style="font-size:.87rem;color:#334155;padding:4px 0">• ${escHtml(w.text)} <span style="color:#94A3B8">(${fmtDateAf(w.date)})</span></div>`);
+      h += `</div>`;
+    }
+    if (d.focuses.length){
+      h += `<div style="margin-bottom:22px"><div style="font-size:.95rem;font-weight:800;color:#1E293B;margin-bottom:8px">🎯 Fokus vorentoe</div>`;
+      d.focuses.forEach(f => h += `<div style="font-size:.87rem;color:#334155;padding:4px 0">• ${escHtml(f.text)}</div>`);
+      h += `</div>`;
+    }
+  } else {
+    h += `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;color:#64748B;font-size:.87rem;margin-bottom:22px">Geen sessies is hierdie maand aangeteken nie.</div>`;
+  }
+  if (d.cadenceAf){
+    h += `<div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 16px;margin-bottom:8px"><div style="font-size:.8rem;font-weight:800;color:#4338CA;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">📅 Aanbevole sessie-ritme</div><div style="font-size:.88rem;color:#3730A3;line-height:1.6">${escHtml(d.cadenceAf)}</div></div>`;
+  }
+  h += `<div style="margin-top:22px;padding-top:14px;border-top:1px solid #E2E8F0;font-size:.82rem;color:#94A3B8;font-style:italic">Opgestel deur ${escHtml(biz || tName || 'MathTutor Pro')} · ${escHtml(d.periodLabelAf)}</div>`;
+  return h;
+}
+function downloadReportPDF(){
+  const d = reportSelection(); if (!d) return;
+  document.getElementById('reportPrintArea').innerHTML = buildReportPrintHTML(d);
+  const prevTitle = document.title;
+  document.title = `${d.studentName} - Vorderingsverslag - ${d.periodLabelAf}`;
+  document.body.classList.add('rp-printing');
+  const cleanup = () => { document.body.classList.remove('rp-printing'); document.title = prevTitle; };
+  window.addEventListener('afterprint', cleanup, { once: true });
+  window.print();
+}
+
+// Clipboard with a legacy fallback (works on file:// and older browsers)
+function copyToClipboard(text){
+  return new Promise((resolve, reject) => {
+    const fallback = () => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        const ok = document.execCommand('copy'); document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('copy failed'));
+      } catch (e){ reject(e); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(resolve).catch(fallback);
+    else fallback();
+  });
 }
 
 // ════════════════════════════════════════
